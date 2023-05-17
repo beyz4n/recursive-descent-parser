@@ -40,23 +40,24 @@ public class Main {
     }
 
     public static void TopLevelForm(){
-        if(line.contains("LEFTPAR")){
+        if(line.startsWith("LEFTPAR")){
+            line = scanner1.nextLine();
             SecondLevelForm();
             line = scanner1.nextLine();
-            if(!line.contains("RIGHTPAR")) {
-            //ERROR
+            if(!line.startsWith("RIGHTPAR")) {
+                System.out.println("error");
             }
         }
-        //ERROR
+        System.out.println("error");
     }
 
     public static void SecondLevelForm(){
-        if(line.contains("LEFTPAR")){
+        if(line.startsWith("LEFTPAR")){
             line = scanner1.nextLine();
             FunCall();
             line = scanner1.nextLine();
-            if(!line.contains("RIGHTPAR")) {
-                //ERROR
+            if(!line.startsWith("RIGHTPAR")) {
+                System.out.println("error");
             }
         }
         else{
@@ -65,31 +66,97 @@ public class Main {
     }
 
     public static void Definition(){
-        if(line.contains("DEFINE")){
-
+        if(line.startsWith("DEFINE")){
+            line = scanner1.nextLine();
+            DefinitionRight();
         }
         else{
-            // error
+            System.out.println("error");
         }
     }
 
     public static void DefinitionRight(){
+        if(line.startsWith("IDENTIFIER")){
+            Expression();
+        }
+        else if (line.startsWith("LEFTPAR")) {
+            line = scanner1.nextLine();
+            if(line.startsWith("IDENTIFIER")){
+                line = scanner1.nextLine();
+                ArgList();
+                line = scanner1.nextLine();
+                if(line.startsWith("RIGHTPAR")){
+                    line = scanner1.nextLine();
+                    Statements();
+                }
+                else{
+                    System.out.println("error");
+                }
+            }
+            else{
+                System.out.println("error");
+            }
+        }
+        else{
+            System.out.println("error");
+        }
 
     }
 
     public static void FunCall(){
+        if(line.startsWith("IDENTIFIER")){
+            line = scanner1.nextLine();
+            Expressions();
+        }
+        else{
+            System.out.println("error");
+        }
 
     }
     public static void Expressions(){
-
+        if(!line.isEmpty()){
+            Expression();
+            line = scanner1.nextLine();
+            Expressions();
+        }
     }
 
     public static void Expr(){
-
+        if(line.startsWith("LET")){
+            LetExpression();
+        }
+        else if (line.startsWith("COND")) {
+            CondExpression();
+        }
+        else if (line.startsWith("IF")){
+            IfExpression();
+        }
+        else if (line.startsWith("BEGIN")) {
+            BeginExpression();
+        }
+        else if (line.startsWith("IDENTIFIER")){
+            FunCall();
+        }
+        else{
+            System.out.println("error");
+        }
     }
 
     public static void Expression(){
-
+        if(line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
+            line = scanner1.nextLine();
+        }
+        else if(line.startsWith("LEFTPAR")){
+            line = scanner1.nextLine();
+            Expr();
+            line = scanner1.nextLine();
+            if(!line.startsWith("RIGHTPAR")){
+                System.out.println("error");
+            }
+        }
+        else{
+            System.out.println("error");
+        }
     }
 
     public static void LetExpression(){
