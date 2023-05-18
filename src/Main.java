@@ -160,24 +160,99 @@ public class Main {
     }
 
     public static void LetExpression(){
-
+        if(line.startsWith("LET")){
+            LetExpr();
+        }
+        else{
+            System.out.println("ERROR");
+        }
     }
 
     public static void LetExpr(){
-
+        if(line.startsWith("IDENTIFIER")){
+            line = scanner1.nextLine();
+            if(line.startsWith("LEFTPAR")){
+                line = scanner1.nextLine();
+                VarDefs();
+                line = scanner1.nextLine();
+                if(line.startsWith("RIGHTPAR")){
+                    line = scanner1.nextLine();
+                    Statements();
+                }
+                else{
+                    System.out.println("ERROR");
+                }
+            }
+            else{
+                System.out.println("ERROR");
+            }
+        }
+        else if (line.startsWith("LEFTPAR")){
+            line = scanner1.nextLine();
+            VarDefs();
+            line = scanner1.nextLine();
+            if(line.startsWith("RIGHTPAR")){
+                line = scanner1.nextLine();
+                Statements();
+            }
+            else {
+                System.out.println("ERROR");
+            }
+        }
+        else{
+            System.out.println("ERROR");
+        }
     }
 
     public static void CondExpression(){
+        if(line.startsWith("COND")){
+            line = scanner1.nextLine();
+            CondBranches();
+        }
+        else{
+            System.out.println("ERROR");
+        }
 
     }
     public static void CondBranches(){
-
+        if (line.startsWith("LEFTPAR")) {
+            line = scanner1.nextLine();
+            Expression();
+            Statements();
+            line = scanner1.nextLine();
+            if(line.startsWith("RIGHTPAR")){
+                line = scanner1.nextLine();
+                CondBranch();
+            }
+            else{
+                System.out.println("ERROR");
+            }
+        }
+        else{
+            System.out.println("ERROR");
+        }
     }
 
     public static void CondBranch(){
-
+        if (line.startsWith("LEFTPAR")) {
+            line = scanner1.nextLine();
+            Expression();
+            Statements();
+            line = scanner1.nextLine();
+            if(!line.startsWith("RIGHTPAR")){
+                System.out.println("ERROR");
+            }
+        }
     }
-    public static void IfExpression(){
+    public static void IfExpression(){ // S
+        if(line.startsWith("IF")){
+            Expression();
+            Expression();
+            EndExpression();
+        }
+        else{
+            System.out.println("ERROR");
+        }
 
     }
     public static void EndExpression(){
