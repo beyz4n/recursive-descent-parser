@@ -8,6 +8,8 @@ public class Main {
     static String line;
     static Scanner scanner1;
     static PrintWriter printWriter;
+    static boolean fileFinished = false;
+
 
     public static void main(String[] args) throws Exception {
 
@@ -16,7 +18,7 @@ public class Main {
         String inputFileName = scanner.nextLine();
         File file = new File(inputFileName);
 
-        while (!file.exists()){
+        while (!file.exists()) {
             System.out.print("You entered a file which does not exist. Please enter a valid one: ");
             scanner = new Scanner(System.in);
             inputFileName = scanner.nextLine();
@@ -25,163 +27,262 @@ public class Main {
 
         File output = new File("output.txt");
         printWriter = new PrintWriter(output);
-        Scanner scanner1 = new Scanner(file);
+        scanner1 = new Scanner(file);
 
-        while(scanner1.hasNextLine()){
-            line = scanner1.nextLine();
-            Program();
-        }
+
+        nextLine();
+        Program();
+
 
     }
 
-    public static void Program(){
-        if(!line.isEmpty()) {
+    public static void nextLine(){
+        if(scanner1.hasNextLine()){
+            line = scanner1.nextLine();
+        }
+        else{
+            fileFinished = true;
+        }
+    }
+
+    public static void Program() {
+        if (!fileFinished) {
             TopLevelForm();
             Program();
         }
     }
 
-    public static void TopLevelForm(){
-        if(line.startsWith("LEFTPAR")){
-            line = scanner1.nextLine();
+    public static void TopLevelForm() {
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+
+            nextLine();
             SecondLevelForm();
-            line = scanner1.nextLine();
-            if(!line.startsWith("RIGHTPAR")) {
+
+            if (line.contains(bracketType)) {
+                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    System.out.println("error");
+                }
+                else{
+                    nextLine();
+                }
+            } else {
                 System.out.println("error");
             }
+
+        } else {
+            System.out.println("error");
         }
-        System.out.println("error");
     }
 
-    public static void SecondLevelForm(){
-        if(line.startsWith("LEFTPAR")){
-            line = scanner1.nextLine();
+    public static void SecondLevelForm() {
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
             FunCall();
-            line = scanner1.nextLine();
-            if(!line.startsWith("RIGHTPAR")) {
+            if (line.contains(bracketType)) {
+                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    System.out.println("error");
+                }
+            } else {
                 System.out.println("error");
             }
-        }
-        else{
+        } else {
             Definition();
         }
     }
 
-    public static void Definition(){
-        if(line.startsWith("DEFINE")){
-            line = scanner1.nextLine();
+    public static void Definition() {
+        if (line.startsWith("DEFINE")) {
+            nextLine();
             DefinitionRight();
-        }
-        else{
+        } else {
             System.out.println("error");
         }
     }
 
-    public static void DefinitionRight(){
-        if(line.startsWith("IDENTIFIER")){
+    public static void DefinitionRight() {
+        if (line.startsWith("IDENTIFIER")) {
             Expression();
         }
-        else if (line.startsWith("LEFTPAR")) {
-            line = scanner1.nextLine();
-            if(line.startsWith("IDENTIFIER")){
-                line = scanner1.nextLine();
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
+            if (line.startsWith("IDENTIFIER")) {
+                nextLine();
                 ArgList();
-                line = scanner1.nextLine();
-                if(line.startsWith("RIGHTPAR")){
-                    line = scanner1.nextLine();
-                    Statements();
-                }
-                else{
+                if (line.contains(bracketType)) {
+                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                        nextLine();
+                        Statements();
+                    } else {
+                        System.out.println("error");
+                    }
+                } else {
                     System.out.println("error");
                 }
-            }
-            else{
+            } else {
                 System.out.println("error");
             }
-        }
-        else{
+        } else {
             System.out.println("error");
         }
 
     }
 
-    public static void FunCall(){
-        if(line.startsWith("IDENTIFIER")){
-            line = scanner1.nextLine();
+    public static void FunCall() {
+        if (line.startsWith("IDENTIFIER")) {
+            nextLine();
             Expressions();
-        }
-        else{
+        } else {
             System.out.println("error");
         }
 
     }
-    public static void Expressions(){
-        if(!line.isEmpty()){
+
+    public static void Expressions() {
+        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             Expression();
-            line = scanner1.nextLine();
             Expressions();
         }
     }
 
-    public static void Expr(){
-        if(line.startsWith("LET")){
+    public static void Expr() {
+        if (line.startsWith("LET")) {
             LetExpression();
-        }
-        else if (line.startsWith("COND")) {
+        } else if (line.startsWith("COND")) {
             CondExpression();
-        }
-        else if (line.startsWith("IF")){
+        } else if (line.startsWith("IF")) {
             IfExpression();
-        }
-        else if (line.startsWith("BEGIN")) {
+        } else if (line.startsWith("BEGIN")) {
             BeginExpression();
-        }
-        else if (line.startsWith("IDENTIFIER")){
+        } else if (line.startsWith("IDENTIFIER")) {
             FunCall();
-        }
-        else{
+        } else {
             System.out.println("error");
         }
     }
 
-    public static void Expression(){
-        if(line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
-            line = scanner1.nextLine();
-        }
-        else if(line.startsWith("LEFTPAR")){
-            line = scanner1.nextLine();
+    public static void Expression() {
+        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
+            nextLine();
+        } else   if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
             Expr();
-            line = scanner1.nextLine();
-            if(!line.startsWith("RIGHTPAR")){
-                System.out.println("error");
+            if (line.contains(bracketType)) {
+                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    System.out.println("error");
+                }
+                else{
+                    nextLine();
+                }
             }
-        }
-        else{
+        } else {
             System.out.println("error");
         }
     }
 
-    public static void LetExpression(){
-        if(line.startsWith("LET")){
+    public static void LetExpression() {
+        if (line.startsWith("LET")) {
+            nextLine();
             LetExpr();
-        }
-        else{
+        } else {
             System.out.println("ERROR");
         }
     }
 
-    public static void LetExpr(){
-        if(line.startsWith("IDENTIFIER")){
-            line = scanner1.nextLine();
-            if(line.startsWith("LEFTPAR")){
-                line = scanner1.nextLine();
+    public static void LetExpr() {
+        if (line.startsWith("IDENTIFIER")) {
+            nextLine();
+            if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+                String bracketType = line.split(" ")[0];
+                bracketType = bracketType.substring(4);
+                nextLine();
                 VarDefs();
-                line = scanner1.nextLine();
-                if(line.startsWith("RIGHTPAR")){
-                    line = scanner1.nextLine();
-                    Statements();
+                if (line.contains(bracketType)) {
+                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                        nextLine();
+                        Statements();
+                    } else {
+                        System.out.println("ERROR");
+                    }
                 }
                 else{
+                    System.out.println("ERROR");
+                }
+            } else {
+                System.out.println("ERROR");
+            }
+        } else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
+            VarDefs();
+            if (line.contains(bracketType)) {
+                if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                    nextLine();
+                    Statements();
+                } else {
+                    System.out.println("ERROR");
+                }
+            }
+            else {
+                System.out.println("ERROR");
+            }
+        } else {
+            System.out.println("ERROR");
+        }
+    }
+
+    public static void CondExpression() {
+        if (line.startsWith("COND")) {
+            nextLine();
+            CondBranches();
+        } else {
+            System.out.println("ERROR");
+        }
+
+    }
+
+    public static void CondBranches() {
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
+            Expression();
+            Statements();
+            nextLine();
+            if (line.contains(bracketType)) {
+                if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                    nextLine();
+                    CondBranch();
+                } else {
+                    System.out.println("ERROR");
+                }
+            }
+            else {
+                System.out.println("ERROR");
+            }
+        } else {
+            System.out.println("ERROR");
+        }
+    }
+
+    public static void CondBranch() {
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
+            Expression();
+            Statements();
+            nextLine();
+            if (line.contains(bracketType)) {
+                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
                     System.out.println("ERROR");
                 }
             }
@@ -189,161 +290,85 @@ public class Main {
                 System.out.println("ERROR");
             }
         }
-        else if (line.startsWith("LEFTPAR")){
-            line = scanner1.nextLine();
-            VarDefs();
-            line = scanner1.nextLine();
-            if(line.startsWith("RIGHTPAR")){
-                line = scanner1.nextLine();
-                Statements();
-            }
-            else {
-                System.out.println("ERROR");
-            }
-        }
-        else{
-            System.out.println("ERROR");
-        }
     }
 
-    public static void CondExpression(){
-        if(line.startsWith("COND")){
-            line = scanner1.nextLine();
-            CondBranches();
-        }
-        else{
-            System.out.println("ERROR");
-        }
-
-    }
-    public static void CondBranches(){
-        if (line.startsWith("LEFTPAR")) {
-            line = scanner1.nextLine();
-            Expression();
-            Statements();
-            line = scanner1.nextLine();
-            if(line.startsWith("RIGHTPAR")){
-                line = scanner1.nextLine();
-                CondBranch();
-            }
-            else{
-                System.out.println("ERROR");
-            }
-        }
-        else{
-            System.out.println("ERROR");
-        }
-    }
-
-    public static void CondBranch(){
-        if (line.startsWith("LEFTPAR")) {
-            line = scanner1.nextLine();
-            Expression();
-            Statements();
-            line = scanner1.nextLine();
-            if(!line.startsWith("RIGHTPAR")){
-                System.out.println("ERROR");
-            }
-        }
-    }
-    public static void IfExpression(){ // S
-        if(line.startsWith("IF")){
+    public static void IfExpression() { // S
+        if (line.startsWith("IF")) {
+            nextLine();
             Expression();
             Expression();
             EndExpression();
-        }
-        else{
+        } else {
             System.out.println("ERROR");
         }
 
     }
-    //bnim(muhammed'in)
-    public static void EndExpression(){
 
-        if(! scanner1.hasNextLine()){
+    public static void EndExpression() {
+        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             Expression();
         }
-        else{
-            return;
-
-        }
     }
-    public static void BeginExpression(){
 
-        line = scanner1.nextLine();
-        if(!line.startsWith("BEGIN")){
+    public static void BeginExpression() {
+
+        if (line.startsWith("BEGIN")) {
+            nextLine();
             Statements();
-        }
-        else{
+        } else {
             System.out.println("ERROR...");
         }
     }
 
-    public static void VarDefs(){
+    public static void VarDefs() {
 
-        line = scanner1.nextLine();
-        if(!line.startsWith("LEFTPAR")){
-            line = scanner1.nextLine();
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            String bracketType = line.split(" ")[0];
+            bracketType = bracketType.substring(4);
+            nextLine();
 
-            if(!line.startsWith("IDNETIFIER")){
+            if (line.startsWith("IDENTIFIER")) {
+                nextLine();
                 Expression();
 
-                line = scanner1.nextLine();
-                if(!line.startsWith("RIGHTPAR")){
-                    VarDef();
+                if (line.contains(bracketType)) {
+                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                        nextLine();
+                        VarDef();
+                    } else {
+                        System.out.println("ERROR...");
+                    }
                 }
-                else{
+                else {
                     System.out.println("ERROR...");
                 }
-            }
-            else{
+            } else {
                 System.out.println("ERROR...");
             }
         }
-        else{
-            System.out.println("ERROR...");
-        }
     }
 
-    public static void VarDef(){
-
-        if( !scanner1.hasNextLine() ){
+    public static void VarDef() {
+        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             VarDefs();
         }
-        else{
-            return;
+    }
+
+    public static void ArgList() {
+        if (line.startsWith("IDENTIFIER")) {
+            nextLine();
+            ArgList();
         }
     }
 
-    public static void ArgList(){
-
-        if(!scanner1.hasNextLine()){
-
-            line = scanner1.nextLine();
-            if(!line.startsWith("IDENTIFIER")){
-                ArgList();
-            }
-            else{
-                System.out.println("ERROR...");
-            }
-        }
-        else{
-            return;
-        }
-    }
-// we could encounter an error where a function takes another functions input, and by doing so messes up the input order
-    public static void Statements(){
-        line = scanner1.nextLine();
-
-        if(!line.startsWith("DEFINE")){
+    public static void Statements() {
+        if (line.startsWith("DEFINE")) {
+            nextLine();
             Definition();
             Statements();
-        }
-        else{
+        } else {
             Expression();
         }
-
     }
-
 }
 
