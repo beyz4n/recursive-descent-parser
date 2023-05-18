@@ -11,28 +11,18 @@ public class LexicalAnalyser {
 
     public static String tokens = ""; // Variable to keep all messages for tokens
     public static PrintWriter printer; // Declaration for PrintWriter in order to print to the output file
+    public static File file;
+    public static boolean anyError = false;
+    public LexicalAnalyser(File input) throws FileNotFoundException {
+        file = input;
+        main();
+    }
 
-    public static void main(String[] args) throws FileNotFoundException {
-
-        // Prompt to user to write the file name.
-        System.out.print("Enter the name of the input file: ");
-
-        // To take name of input file from the user.
-        Scanner sc = new Scanner(System.in);
-        String input = sc.nextLine();
-        File file = new File(input);
+    public static void main() throws FileNotFoundException {
 
         // Create a file for output.
-        File output = new File("output.txt");
+        File output = new File("lexical_output.txt");
         printer = new PrintWriter(output);
-
-        // If given file name does not match with the existing files, prompt user to write the file name correctly.
-        while (!file.exists()) {
-            System.out.print("You entered a file that does not exist. Please enter the name of the input file correctly: ");
-            sc = new Scanner(System.in);
-            input = sc.nextLine();
-            file = new File(input);
-        }
 
         // Scanner to read inside the given file
         Scanner scanner = new Scanner(file);
@@ -237,8 +227,8 @@ public class LexicalAnalyser {
             row++; // Increment row at the end of each line
         }
         // If there is no invalid token, print all of them
-        tokens = tokens.trim();
-        System.out.println(tokens);
+    //    tokens = tokens.trim();
+    //    System.out.println(tokens);
         printer.print(tokens);
         printer.close();
     }
@@ -251,6 +241,7 @@ public class LexicalAnalyser {
         System.out.println("LEXICAL ERROR [" + row + ":" + (col + 1) + "]: Invalid token '" + error + "'");
         printer.print("LEXICAL ERROR [" + row + ":" + (col + 1) + "]: Invalid token '" + error + "'");
         printer.close();
+        anyError = true;
         System.exit(1);
     }
 

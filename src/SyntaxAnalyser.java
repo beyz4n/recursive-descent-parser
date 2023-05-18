@@ -27,14 +27,15 @@ public class SyntaxAnalyser {
 
         File outputFile = new File("output.txt");
         printWriter = new PrintWriter(outputFile);
-        scanner1 = new Scanner(file);
 
-
-        nextLine();
-        Program();
-
-
-        System.out.println(output);
+        LexicalAnalyser lexicalAnalyser = new LexicalAnalyser(file);
+        File lex = new File("lexical_output.txt");
+        scanner1 = new Scanner(lex);
+        if(!LexicalAnalyser.anyError){
+            nextLine();
+            Program();
+            System.out.println(output);
+        }
     }
 
     public static void nextLine(){
@@ -48,7 +49,7 @@ public class SyntaxAnalyser {
 
     public static String emptySpacePrinter(){
         String str = "";
-        for (long i = 0; i<emptySpaceCounter;i++){
+        for (long i = 0; i<emptySpaceCounter; i++){
             str += " ";
         }
         return str;
@@ -68,7 +69,6 @@ public class SyntaxAnalyser {
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
-
             output +=  emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             nextLine();
             SecondLevelForm();
@@ -93,7 +93,8 @@ public class SyntaxAnalyser {
     }
 
     public static void SecondLevelForm() {
-        output += "<SecondLevelForm>" + "\n ";
+        emptySpaceCounter++;
+        output +=  emptySpacePrinter() + "<SecondLevelForm>" + "\n";
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
@@ -109,6 +110,7 @@ public class SyntaxAnalyser {
         } else {
             Definition();
         }
+        emptySpaceCounter--;
     }
 
     public static void Definition() {
