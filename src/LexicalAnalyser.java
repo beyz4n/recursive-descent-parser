@@ -12,7 +12,6 @@ public class LexicalAnalyser {
     public static String tokens = ""; // Variable to keep all messages for tokens
     public static PrintWriter printer; // Declaration for PrintWriter in order to print to the output file
     public static File file;
-    public static boolean anyError = false;
     public LexicalAnalyser(File input) throws FileNotFoundException {
         file = input;
         main();
@@ -241,7 +240,6 @@ public class LexicalAnalyser {
         System.out.println("LEXICAL ERROR [" + row + ":" + (col + 1) + "]: Invalid token '" + error + "'");
         printer.print("LEXICAL ERROR [" + row + ":" + (col + 1) + "]: Invalid token '" + error + "'");
         printer.close();
-        anyError = true;
         System.exit(1);
     }
 
