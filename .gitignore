@@ -5,6 +5,7 @@ out/
 recursive-descent-parser.iml
 .idea/
 output.txt
+lexical_output.txt
 
 
 ### Eclipse ###
