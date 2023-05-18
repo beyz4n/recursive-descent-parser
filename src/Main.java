@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import static java.lang.System.err;
+
 public class Main {
     static String line;
     static Scanner scanner1;
@@ -113,26 +115,91 @@ public class Main {
     public static void IfExpression(){
 
     }
+    //bnim(muhammed'in)
     public static void EndExpression(){
 
+        if(! scanner1.hasNextLine()){
+            Expression();
+        }
+        else{
+            return;
+
+        }
     }
     public static void BeginExpression(){
 
+        line = scanner1.nextLine();
+        if(!line.startsWith("BEGIN")){
+            Statements();
+        }
+        else{
+            System.out.println("ERROR...");
+        }
     }
 
     public static void VarDefs(){
 
+        line = scanner1.nextLine();
+        if(!line.startsWith("LEFTPAR")){
+            line = scanner1.nextLine();
+
+            if(!line.startsWith("IDNETIFIER")){
+                Expression();
+
+                line = scanner1.nextLine();
+                if(!line.startsWith("RIGHTPAR")){
+                    VarDef();
+                }
+                else{
+                    System.out.println("ERROR...");
+                }
+            }
+            else{
+                System.out.println("ERROR...");
+            }
+        }
+        else{
+            System.out.println("ERROR...");
+        }
     }
 
     public static void VarDef(){
 
+        if( !scanner1.hasNextLine() ){
+            VarDefs();
+        }
+        else{
+            return;
+        }
     }
 
     public static void ArgList(){
 
-    }
+        if(!scanner1.hasNextLine()){
 
+            line = scanner1.nextLine();
+            if(!line.startsWith("IDENTIFIER")){
+                ArgList();
+            }
+            else{
+                System.out.println("ERROR...");
+            }
+        }
+        else{
+            return;
+        }
+    }
+// we could encounter an error where a function takes another functions input, and by doing so messes up the input order
     public static void Statements(){
+        line = scanner1.nextLine();
+
+        if(!line.startsWith("DEFINE")){
+            Definition();
+            Statements();
+        }
+        else{
+            Expression();
+        }
 
     }
 
