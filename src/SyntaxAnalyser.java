@@ -4,9 +4,11 @@ import java.util.Scanner;
 
 public class SyntaxAnalyser {
     static String line;
+    static String output = "";
     static Scanner scanner1;
     static PrintWriter printWriter;
     static boolean fileFinished = false;
+    static long emptySpaceCounter = 0;
 
 
     public static void main(String[] args) throws Exception {
@@ -23,8 +25,8 @@ public class SyntaxAnalyser {
             file = new File(inputFileName);
         }
 
-        File output = new File("output.txt");
-        printWriter = new PrintWriter(output);
+        File outputFile = new File("output.txt");
+        printWriter = new PrintWriter(outputFile);
         scanner1 = new Scanner(file);
 
 
@@ -32,6 +34,7 @@ public class SyntaxAnalyser {
         Program();
 
 
+        System.out.println(output);
     }
 
     public static void nextLine(){
@@ -43,38 +46,54 @@ public class SyntaxAnalyser {
         }
     }
 
+    public static String emptySpacePrinter(){
+        String str = "";
+        for (long i = 0; i<emptySpaceCounter;i++){
+            str += " ";
+        }
+        return str;
+    }
+
     public static void Program() {
         if (!fileFinished) {
+            output += "<Program>" + "\n";
             TopLevelForm();
             Program();
         }
     }
 
     public static void TopLevelForm() {
+        emptySpaceCounter++;
+        output +=  emptySpacePrinter() + "<TopLevelForm>" + "\n";
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
 
+            output +=  emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             nextLine();
             SecondLevelForm();
 
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    System.out.println("error");
+                    System.out.println("WE DONT HAVE RIGHT BRACKETS");
                 }
                 else{
+                    output +=  emptySpacePrinter() + "RIGHT" + bracketType + "())" + "\n";
                     nextLine();
                 }
-            } else {
-                System.out.println("error");
+            }
+            else {
+                System.out.println("NOT THE CORRECT BRACKET");
             }
 
         } else {
-            System.out.println("error");
+            System.out.println("THERE SHOULD BE LEFT BRACKETS");
         }
+        emptySpaceCounter--;
     }
 
     public static void SecondLevelForm() {
+        output += "<SecondLevelForm>" + "\n ";
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
