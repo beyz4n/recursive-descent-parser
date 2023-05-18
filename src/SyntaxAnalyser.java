@@ -2,9 +2,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import static java.lang.System.err;
-
-public class Main {
+public class SyntaxAnalyser {
     static String line;
     static Scanner scanner1;
     static PrintWriter printWriter;
