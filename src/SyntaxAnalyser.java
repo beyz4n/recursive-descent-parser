@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SyntaxAnalyser {
@@ -9,6 +10,8 @@ public class SyntaxAnalyser {
     static PrintWriter printWriter;
     static boolean fileFinished = false;
     static long emptySpaceCounter = 0;
+    static File file;
+    static ArrayList<String> lexemes;
 
 
     public static void main(String[] args) throws Exception {
@@ -16,7 +19,7 @@ public class SyntaxAnalyser {
         System.out.print("Enter the name of the input file: ");
         Scanner scanner = new Scanner(System.in);
         String inputFileName = scanner.nextLine();
-        File file = new File(inputFileName);
+        file = new File(inputFileName);
 
         while (!file.exists()) {
             System.out.print("You entered a file which does not exist. Please enter a valid one: ");
@@ -29,6 +32,12 @@ public class SyntaxAnalyser {
         printWriter = new PrintWriter(outputFile);
 
         new LexicalAnalyser(file);
+        Scanner scanner2 = new Scanner(file);
+        lexemes = new ArrayList<>();
+        while(scanner2.hasNextLine()){
+            lexemes.add(scanner2.nextLine());
+        }
+
         File lex = new File("lexical_output.txt");
         scanner1 = new Scanner(lex);
         nextLine();
@@ -62,7 +71,22 @@ public class SyntaxAnalyser {
         System.out.println(output);
         System.exit(1);
     }
-
+    public static String getActualLexeme(){
+        String str = "";
+        String point = line.split(" ")[1];
+        int row = Integer.parseInt(point.split(":")[0]);
+        int col = Integer.parseInt(point.split(":")[1]);
+        str = lexemes.get(row-1);
+        str = str.substring(col-1);
+        String identifier = "";
+        int count = 0;
+        while(count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' ||
+                str.charAt(count) == '[' || str.charAt(count) == ']' || str.charAt(count) == '{' || str.charAt(count) == '}' || str.charAt(count) == '~')){
+            identifier += str.charAt(count);
+            count++;
+        }
+        return identifier;
+    }
     public static void Program() {
         output += emptySpacePrinter() + "<Program>" + "\n";
         emptySpaceCounter++;
@@ -140,7 +164,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<Definition>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("DEFINE")) {
-            output += emptySpacePrinter() + "DEFINE" + "\n";
+            output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
             nextLine();
             DefinitionRight();
         } else {
