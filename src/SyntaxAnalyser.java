@@ -73,19 +73,44 @@ public class SyntaxAnalyser {
     }
     public static String getActualLexeme(){
         String str = "";
+        String type = line.split(" ")[0];
         String point = line.split(" ")[1];
         int row = Integer.parseInt(point.split(":")[0]);
         int col = Integer.parseInt(point.split(":")[1]);
-        str = lexemes.get(row-1);
-        str = str.substring(col-1);
-        String identifier = "";
-        int count = 0;
-        while(count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' ||
-                str.charAt(count) == '[' || str.charAt(count) == ']' || str.charAt(count) == '{' || str.charAt(count) == '}' || str.charAt(count) == '~')){
-            identifier += str.charAt(count);
-            count++;
+        str = lexemes.get(row - 1);
+        str = str.substring(col - 1);
+        if(!type.startsWith("STRING") && !type.startsWith("CHAR")) {
+            String identifier = "";
+            int count = 0;
+            while (count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' ||
+                    str.charAt(count) == '[' || str.charAt(count) == ']' || str.charAt(count) == '{' || str.charAt(count) == '}' || str.charAt(count) == '~')) {
+                identifier += str.charAt(count);
+                count++;
+            }
+            return identifier;
         }
-        return identifier;
+        else if(type.startsWith("STRING")){
+            String identifier = "" + str.charAt(0);
+            int count = 1;
+            while(count < str.length()){
+                identifier += str.charAt(count);
+                if(str.charAt(count) == '"' && str.charAt(count-1) != '\\')
+                    break;
+                count++;
+            }
+            return identifier;
+        }
+        else {
+            String identifier = "" + str.charAt(0);
+            int count = 1;
+            while(count < str.length()){
+                identifier += str.charAt(count);
+                if(str.charAt(count) == '\'' && str.charAt(count-1) != '\\')
+                    break;
+                count++;
+            }
+            return identifier;
+        }
     }
     public static void Program() {
         output += emptySpacePrinter() + "<Program>" + "\n";
