@@ -469,7 +469,7 @@ public class SyntaxAnalyser {
         emptySpaceCounter++;
         if (line.startsWith("BEGIN")) {
             nextLine();
-            output += emptySpacePrinter() + "BEGIN" + "\n";
+            output += emptySpacePrinter() + "BEGIN (" + getActualLexeme() + ")\n";
             Statements();
         } else {
             printError("BEGIN");
@@ -486,7 +486,7 @@ public class SyntaxAnalyser {
             nextLine();
             output += emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             if (line.startsWith("IDENTIFIER")) {
-                output += emptySpacePrinter() + "IDENTIFIER" + "\n";
+                output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
                 nextLine();
                 Expression();
 
@@ -528,7 +528,7 @@ public class SyntaxAnalyser {
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
             nextLine();
-            output += emptySpacePrinter() + "IDENTIFIER" + "\n";
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
             ArgList();
         }
         else{
@@ -542,7 +542,7 @@ public class SyntaxAnalyser {
         emptySpaceCounter++;
         if (line.startsWith("DEFINE")) {
             nextLine();
-            output += emptySpacePrinter() + "DEFINE" + "\n";
+            output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
             Definition();
             Statements();
         } else {
