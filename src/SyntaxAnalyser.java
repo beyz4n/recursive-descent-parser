@@ -177,7 +177,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<DefinitionRight>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
-            output += emptySpacePrinter() + "IDENTIFIER" + "\n";
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
             Expression();
         }
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
@@ -186,7 +186,7 @@ public class SyntaxAnalyser {
             output += emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             nextLine();
             if (line.startsWith("IDENTIFIER")) {
-                output += emptySpacePrinter() + "IDENTIFIER" + "\n";
+                output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
                 nextLine();
                 ArgList();
                 if (line.contains(bracketType)) {
@@ -217,7 +217,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<FunCall>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
-            output += emptySpacePrinter() + "IDENTIFIER" + "\n";
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
             nextLine();
             Expressions();
         }
@@ -267,8 +267,9 @@ public class SyntaxAnalyser {
     public static void Expression() {
         output += emptySpacePrinter() + "<Expression>" + "\n";
         emptySpaceCounter++;
+        //TODO:
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
-            output += emptySpacePrinter() + line.split(" ")[0] + "\n";
+            output += emptySpacePrinter() + line.split(" ")[0] + " (" + getActualLexeme() + ")\n";
             nextLine();
         }
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
