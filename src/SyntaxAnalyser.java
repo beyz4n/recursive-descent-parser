@@ -33,8 +33,9 @@ public class SyntaxAnalyser {
         scanner1 = new Scanner(lex);
         nextLine();
         Program();
-        printWriter.print(outputFile);
+        printWriter.print(output);
         System.out.print(output);
+        printWriter.close();
     }
 
     public static void nextLine(){
@@ -57,24 +58,27 @@ public class SyntaxAnalyser {
     public static void printError(String error) {
         output += "SYNTAX ERROR" + line.split(" ")[1] + "'" + error + "' is expected";
         printWriter.print(output);
+        printWriter.close();
         System.out.println(output);
         System.exit(1);
     }
 
     public static void Program() {
+        output += emptySpacePrinter() + "<Program>" + "\n";
+        emptySpaceCounter++;
         if (!fileFinished && (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB"))) {
-            output += "<Program>" + "\n";
             TopLevelForm();
             Program();
         }
         else {
             output +=  emptySpacePrinter() +  "__" + '\n';
         }
+        emptySpaceCounter--;
     }
 
     public static void TopLevelForm() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<TopLevelForm>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
@@ -103,8 +107,8 @@ public class SyntaxAnalyser {
     }
 
     public static void SecondLevelForm() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<SecondLevelForm>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
@@ -133,8 +137,8 @@ public class SyntaxAnalyser {
     }
 
     public static void Definition() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<Definition>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("DEFINE")) {
             output += emptySpacePrinter() + "DEFINE" + "\n";
             nextLine();
@@ -146,9 +150,10 @@ public class SyntaxAnalyser {
     }
 
     public static void DefinitionRight() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<DefinitionRight>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
+            output += emptySpacePrinter() + "IDENTIFIER" + "\n";
             Expression();
         }
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
@@ -157,6 +162,7 @@ public class SyntaxAnalyser {
             output += emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             nextLine();
             if (line.startsWith("IDENTIFIER")) {
+                output += emptySpacePrinter() + "IDENTIFIER" + "\n";
                 nextLine();
                 ArgList();
                 if (line.contains(bracketType)) {
@@ -184,8 +190,8 @@ public class SyntaxAnalyser {
     }
 
     public static void FunCall() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<FunCall>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER" + "\n";
             nextLine();
@@ -198,8 +204,8 @@ public class SyntaxAnalyser {
     }
 
     public static void Expressions() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<Expressions>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             Expression();
             Expressions();
@@ -211,8 +217,8 @@ public class SyntaxAnalyser {
     }
 
     public static void Expr() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<Expr>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LET")) {
             LetExpression();
         }
@@ -235,8 +241,8 @@ public class SyntaxAnalyser {
     }
 
     public static void Expression() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<Expression>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
             output += emptySpacePrinter() + line.split(" ")[0] + "\n";
             nextLine();
@@ -266,9 +272,9 @@ public class SyntaxAnalyser {
         emptySpaceCounter--;
     }
 
-    public static void LetExpression() { // S
-        emptySpaceCounter++;
+    public static void LetExpression() {
         output += emptySpacePrinter() + "<LetExpression>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LET")) {
             output += emptySpacePrinter() + "LET" + "(" + ")" + "\n"; // içine eklenecek
             nextLine();
@@ -280,9 +286,8 @@ public class SyntaxAnalyser {
     }
 
     public static void LetExpr() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<LetExpr>" + "\n";
-
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER" + "(" + ")" + "\n"; // içine eklenecek
             nextLine();
@@ -337,8 +342,8 @@ public class SyntaxAnalyser {
     }
 
     public static void CondExpression() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<CondExpression>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("COND")) {
             output += emptySpacePrinter() + "COND" + "(" + ")" + "\n"; // içine eklenecek
             nextLine();
@@ -351,8 +356,8 @@ public class SyntaxAnalyser {
     }
 
     public static void CondBranches() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<CondBranches>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
@@ -379,8 +384,8 @@ public class SyntaxAnalyser {
     }
 
     public static void CondBranch() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<CondBranch>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
@@ -407,8 +412,8 @@ public class SyntaxAnalyser {
     }
 
     public static void IfExpression() { // S
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IF")) {
             output += emptySpacePrinter() + "IF" + "(" + ")" + "\n"; // içine eklenecek
             nextLine();
@@ -423,8 +428,8 @@ public class SyntaxAnalyser {
     }
 
     public static void EndExpression() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<EndExpresssion>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             Expression();
         }
@@ -435,11 +440,11 @@ public class SyntaxAnalyser {
     }
 
     public static void BeginExpression() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<BeginExpression>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("BEGIN")) {
             nextLine();
-            output += emptySpacePrinter() + "<BEGIN>" + "\n";
+            output += emptySpacePrinter() + "BEGIN" + "\n";
             Statements();
         } else {
             printError("BEGIN");
@@ -448,22 +453,22 @@ public class SyntaxAnalyser {
     }
 
     public static void VarDefs() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<VarDefs>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
             nextLine();
-            output += emptySpacePrinter() + "<LEFT" + bracketType + ">(()" + "\n";
+            output += emptySpacePrinter() + "LEFT" + bracketType + "(()" + "\n";
             if (line.startsWith("IDENTIFIER")) {
-                output += emptySpacePrinter() + "<IDENTIFIER>" + "\n";
+                output += emptySpacePrinter() + "IDENTIFIER" + "\n";
                 nextLine();
                 Expression();
 
                 if (line.contains(bracketType)) {
                     if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
                         nextLine();
-                        output += emptySpacePrinter() + "<RIGHT" + bracketType + ">())" + "\n";
+                        output += emptySpacePrinter() + "RIGHT" + bracketType + "())" + "\n";
                         VarDef();
                     }
                     else {
@@ -482,8 +487,8 @@ public class SyntaxAnalyser {
     }
 
     public static void VarDef() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<VarDef>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             VarDefs();
         }
@@ -494,11 +499,11 @@ public class SyntaxAnalyser {
     }
 
     public static void ArgList() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<ArgList>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
             nextLine();
-            output += emptySpacePrinter() + "<IDENTIFIER>" + "\n";
+            output += emptySpacePrinter() + "IDENTIFIER" + "\n";
             ArgList();
         }
         else{
@@ -508,11 +513,11 @@ public class SyntaxAnalyser {
     }
 
     public static void Statements() {
-        emptySpaceCounter++;
         output += emptySpacePrinter() + "<Statements>" + "\n";
+        emptySpaceCounter++;
         if (line.startsWith("DEFINE")) {
             nextLine();
-            output += emptySpacePrinter() + "<DEFINE>" + "\n";
+            output += emptySpacePrinter() + "DEFINE" + "\n";
             Definition();
             Statements();
         } else {
