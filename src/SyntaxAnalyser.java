@@ -301,7 +301,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<LetExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("LET")) {
-            output += emptySpacePrinter() + "LET" + "(" + ")" + "\n"; // içine eklenecek
+            output += emptySpacePrinter() + "LET (" + getActualLexeme() + ")\n"; // içine eklenecek
             nextLine();
             LetExpr();
         } else {
@@ -314,7 +314,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<LetExpr>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
-            output += emptySpacePrinter() + "IDENTIFIER" + "(" + ")" + "\n"; // içine eklenecek
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n"; // içine eklenecek
             nextLine();
 
             if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
@@ -370,7 +370,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<CondExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("COND")) {
-            output += emptySpacePrinter() + "COND" + "(" + ")" + "\n"; // içine eklenecek
+            output += emptySpacePrinter() + "COND (" + getActualLexeme() + ")\n"; // içine eklenecek
             nextLine();
             CondBranches();
         }
@@ -440,7 +440,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IF")) {
-            output += emptySpacePrinter() + "IF" + "(" + ")" + "\n"; // içine eklenecek
+            output += emptySpacePrinter() + "IF (" + getActualLexeme() + ")\n"; // içine eklenecek
             nextLine();
             Expression();
             Expression();
