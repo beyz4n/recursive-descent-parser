@@ -326,7 +326,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<LetExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("LET")) {
-            output += emptySpacePrinter() + "LET (" + getActualLexeme() + ")\n"; // içine eklenecek
+            output += emptySpacePrinter() + "LET (" + getActualLexeme() + ")\n";
             nextLine();
             LetExpr();
         } else {
@@ -339,7 +339,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<LetExpr>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
-            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n"; // içine eklenecek
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
             nextLine();
 
             if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
@@ -395,7 +395,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<CondExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("COND")) {
-            output += emptySpacePrinter() + "COND (" + getActualLexeme() + ")\n"; // içine eklenecek
+            output += emptySpacePrinter() + "COND (" + getActualLexeme() + ")\n";
             nextLine();
             CondBranches();
         }
@@ -415,7 +415,7 @@ public class SyntaxAnalyser {
             nextLine();
             Expression();
             Statements();
-            nextLine(); // şu sanki olmamalı ama(?)
+            //nextLine(); // şu sanki olmamalı ama(?)
             if (line.contains(bracketType)) {
                 if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
                     output += emptySpacePrinter() + "RIGHT" + bracketType + "(()" + "\n"; // bracked type düzenlenebilir
@@ -443,7 +443,7 @@ public class SyntaxAnalyser {
             nextLine();
             Expression();
             Statements();
-            nextLine(); // bu da olmamalı gibi ama (?)
+            //nextLine(); // bu da olmamalı gibi ama (?)
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
                     printError(")");
@@ -465,7 +465,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IF")) {
-            output += emptySpacePrinter() + "IF (" + getActualLexeme() + ")\n"; // içine eklenecek
+            output += emptySpacePrinter() + "IF (" + getActualLexeme() + ")\n";
             nextLine();
             Expression();
             Expression();
