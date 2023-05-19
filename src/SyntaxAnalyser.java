@@ -127,159 +127,225 @@ public class SyntaxAnalyser {
         else
             return "{";
     }
+    // This method applies the grammar of Program
     public static void Program() {
+        // adds the program to the output using the empty space counter
         output += emptySpacePrinter() + "<Program>" + "\n";
+        // increase the empty space counter since we entered a rule
         emptySpaceCounter++;
+        // check if file is finished or we have a left parenthesis
         if (!fileFinished && (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB"))) {
+            //call these functions according to the  grammar
             TopLevelForm();
             Program();
         }
+        // if it is epsilon then add it to output
         else {
             output +=  emptySpacePrinter() +  "__" + '\n';
         }
+        // when we are done with the function decrease the counter
         emptySpaceCounter--;
     }
-
+    // This method applies the grammar of TopLevelForm
     public static void TopLevelForm() {
+        // add the function to the output and increment the counter
         output += emptySpacePrinter() + "<TopLevelForm>" + "\n";
         emptySpaceCounter++;
+        // check if we start with a left parenthesis
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // keep the bracket type
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
+            // add the parenthesis to the output
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            // call the functions according to the grammar
             nextLine();
             SecondLevelForm();
-
+            // when the calls are done check if we have the right and same type of parenthesis
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    // if we dont have right parenthesis print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
+                    // if we have add to output
                     output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                     nextLine();
                 }
             }
+            // if we dont have correct bracket type print error
             else {
                 printError(getTheBracket(bracketType, "r"));
             }
         }
+        // if we didnt have left parenthesis at beginning give error
         else {
             printError("(");
         }
+        // after function is done decrement the counter
         emptySpaceCounter--;
     }
 
+    // This method applies the grammar of Second Level Form
     public static void SecondLevelForm() {
+        // add it to the output and increment the counter
         output += emptySpacePrinter() + "<SecondLevelForm>" + "\n";
         emptySpaceCounter++;
+        // check if we start with a left parenthesis
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // keep the bracket type
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
+            // add the parenthesis to the output
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            // call other functions according to the grammar
             nextLine();
             FunCall();
+            // when the calls are done check if we have the right and same type of parenthesis
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    // if we dont have right parenthesis print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
+                    // if we have then add to output
                     output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                     nextLine();
                 }
             }
             else {
+                // if we dont have right bracket type print error
                 printError(getTheBracket(bracketType, "r"));
             }
         }
+        // or call definition if there is no left parenthesis
         else {
             Definition();
         }
+        // decrement the counter since we are at the end of the function
         emptySpaceCounter--;
     }
 
+    // This function applies the grammar of the definiton
     public static void Definition() {
+        // puts the function to the output and increment the counter
         output += emptySpacePrinter() + "<Definition>" + "\n";
         emptySpaceCounter++;
+        // if we have define
         if (line.startsWith("DEFINE")) {
+            // add it to the output
             output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
+            // call necessary functions
             nextLine();
             DefinitionRight();
-        } else {
+        }
+        // if there is no define give error
+        else {
             printError("DEFINE");
         }
+        // decrement the counter
         emptySpaceCounter--;
     }
 
+    // This function applies the grammar of Definition Right
     public static void DefinitionRight() {
+        // add the function to the output and increment the counter
         output += emptySpacePrinter() + "<DefinitionRight>" + "\n";
         emptySpaceCounter++;
+        // if we have identifier then
         if (line.startsWith("IDENTIFIER")) {
+            // put it to the output and call expression
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
             Expression();
         }
+        // if we have a left parenthesis
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // keep the bracket type
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
+            // put left parenthesis to output
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
             nextLine();
+            // check if it is identifier
             if (line.startsWith("IDENTIFIER")) {
+                // put it to the output call new functions
                 output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
                 nextLine();
                 ArgList();
+                // if we have right and correct type of parenthesis
                 if (line.contains(bracketType)) {
                     if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                        // put it to the output and call the new functions
                         output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                         nextLine();
                         Statements();
                     }
+                    // if we dont have right parenthesis print error
                     else {
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
+                // if we dont have the right bracket type print error
                 else {
                     printError(getTheBracket(bracketType, "r"));
                 }
             }
+            // we expect an identifier, print error
             else {
                 printError("IDENTIFIER");
             }
         }
+        // we expect left par or identifier print error
         else {
-            printError("( or IDENTIFIER");
+            printError("(/IDENTIFIER");
         }
+        // end of function decrement the counter
         emptySpaceCounter--;
     }
 
+    // This function applies the grammar of FunCall
     public static void FunCall() {
+        // put the function to the output, increment the counter
         output += emptySpacePrinter() + "<FunCall>" + "\n";
         emptySpaceCounter++;
+        // if we have identifier put it to the output and call the functions
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
             nextLine();
             Expressions();
         }
+        // we expect a identifier, print error
         else {
             printError("IDENTIFIER");
         }
+        // decrement the counter since end of function
         emptySpaceCounter--;
     }
 
+    // This function applies the grammar of Expressions
     public static void Expressions() {
+        // put the function to the output and increment the counter
         output += emptySpacePrinter() + "<Expressions>" + "\n";
         emptySpaceCounter++;
+        // if we have id, number, char, boolean or string call functions
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             Expression();
             Expressions();
         }
+        // if it is epsilon then put it to the output
         else{
             output +=  emptySpacePrinter() +  "__" + '\n';
         }
+        // decrement the counter
         emptySpaceCounter--;
     }
 
+    // This method applies the grammar of Expr
     public static void Expr() {
+        // put it to the output and increment the counter
         output += emptySpacePrinter() + "<Expr>" + "\n";
         emptySpaceCounter++;
+        // according to the keyword call the expression for them
         if (line.startsWith("LET")) {
             LetExpression();
         }
@@ -292,45 +358,59 @@ public class SyntaxAnalyser {
         else if (line.startsWith("BEGIN")) {
             BeginExpression();
         }
+        // for identifier, we call funCall
         else if (line.startsWith("IDENTIFIER")) {
             FunCall();
         }
+        // we expect these print error
         else {
             printError("LET/COND/IF/BEGIN/IDENTIFIER");
         }
+        // decrement counter
         emptySpaceCounter--;
     }
 
+    // This method applies the grammar of Expression
     public static void Expression() {
+        // put it to the output and increment the counter
         output += emptySpacePrinter() + "<Expression>" + "\n";
         emptySpaceCounter++;
-        //TODO:
+        // check if we have one of these, if we have put it to the output and call the next line
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
             output += emptySpacePrinter() + line.split(" ")[0] + " (" + getActualLexeme() + ")\n";
             nextLine();
         }
+        // if we have left parenthesis
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // keep the bracket type
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
+            // put the left parenthesis to the output and call necessary rules
             output += emptySpacePrinter() + "LEFT" + bracketType +"(" + getTheBracket(bracketType, "l") + ")" + "\n";
             nextLine();
             Expr();
+            // if we have right and correct brackets
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                    // if we dont have print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
+                    // put it to output and call the next line
                     output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                     nextLine();
                 }
             }
+            // if we dont have print error
             else{
                 printError(getTheBracket(bracketType, "r"));
             }
         }
+        // if none, then print error with expecting these
         else {
             printError("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(");
         }
+        // decrement the counter
         emptySpaceCounter--;
     }
 

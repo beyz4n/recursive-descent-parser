@@ -11,9 +11,13 @@ public class LexicalAnalyser {
 
     public static String tokens = ""; // Variable to keep all messages for tokens
     public static PrintWriter printer; // Declaration for PrintWriter in order to print to the output file
-    public static File file;
+    public static File file; // File to put using constructor
+
+    // Creating a constructor for the lexical part to call before doing syntax analysis
     public LexicalAnalyser(File input) throws FileNotFoundException {
+        // putting the file given in the constructor to the actual one
         file = input;
+        // calling the main to start the lexical analysis
         main();
     }
 
