@@ -662,8 +662,8 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<BeginExpression>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("BEGIN")) {
-            nextLine();
             output += emptySpacePrinter() + "BEGIN (" + getActualLexeme() + ")\n";
+            nextLine();
             Statements();
         } else {
             printError("BEGIN");
