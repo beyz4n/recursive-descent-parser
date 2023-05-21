@@ -4,63 +4,70 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SyntaxAnalyser {
-    static String line;
-    static String output = "";
+    static String line; // this is the string where we store the current line of the input file
+    static String output = ""; // this is the string where we store the output of the lexical analyser
     static Scanner scanner1;
     static PrintWriter printWriter;
-    static boolean fileFinished = false;
-    static long emptySpaceCounter = 0;
+    static boolean fileFinished = false; // boolean variable to mark the end of a file
+    static long emptySpaceCounter = 0; // used to count the number of space chars needed
     static File file;
-    static ArrayList<String> lexemes;
+    static ArrayList<String> lexemes; // list containing all the lexemes
 
-
+    // this is our main method where we integrate everything
     public static void main(String[] args) throws Exception {
-
+        // prompting the user to enter the input file path
         System.out.print("Enter the name of the input file: ");
         Scanner scanner = new Scanner(System.in);
         String inputFileName = scanner.nextLine();
-        file = new File(inputFileName);
-
+        file = new File(inputFileName); // creating a file object for the input file
+        // here we check if the input file exists, if not we prompt the user to enter an input file path again
         while (!file.exists()) {
             System.out.print("You entered a file which does not exist. Please enter a valid one: ");
             scanner = new Scanner(System.in);
             inputFileName = scanner.nextLine();
             file = new File(inputFileName);
         }
-
+        // creating output file to print the results of the syntax analyser
         File outputFile = new File("output.txt");
         printWriter = new PrintWriter(outputFile);
-
+        // creating an object of the lexical analyser to convert the input into tokens which our syntax analyser can analyse
         new LexicalAnalyser(file);
         Scanner scanner2 = new Scanner(file);
         lexemes = new ArrayList<>();
+        // adding the lexemes to an arraylist to access them, for the gerActualLexeme method
         while(scanner2.hasNextLine()){
             lexemes.add(scanner2.nextLine());
         }
-
+        // creating an output file to read the output of the lexical analyser
         File lex = new File("lexical_output.txt");
         scanner1 = new Scanner(lex);
+        // starting the recursive descent parser algorithm with the program method
         nextLine();
         Program();
+        // printing the output to the output.txt file and to the console
         printWriter.print(output.trim());
         System.out.print(output.trim());
         printWriter.close();
     }
-
+    // this method is to simplify the setting of the next line
     public static void nextLine(){
+        // checking if a next line exist
         if(scanner1.hasNextLine()){
-            line = scanner1.nextLine();
+            line = scanner1.nextLine(); // if it exists, setting the line accordingly
         }
         else{
-            fileFinished = true;
+            fileFinished = true; // if it doesn't exist, setting the fileFinished boolean variable accordingly
         }
     }
-
+    // this function is there to align the output accordingly to the given  documentation
     public static String emptySpacePrinter() {
+        // creating an empty string to store the space characters
         String str = "";
+        // setting the according number of space characters
         for (long i = 0; i < emptySpaceCounter; i++) {
             str += " ";
         }
+        // returning the string consisting with the requested number of space characters
         return str;
     }
 
@@ -645,104 +652,140 @@ public class SyntaxAnalyser {
         }
         emptySpaceCounter--; // decrement space counter
     }
-
+    // this method is used to apply the grammar of EndExpression
     public static void EndExpression() {
-        output += emptySpacePrinter() + "<EndExpresssion>" + "\n";
-        emptySpaceCounter++;
+        // adding the method name with the correct alignment
+        output += emptySpacePrinter() + "<EndExpression>" + "\n";
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking which method to call
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // calling the Expression method if the next line contains one of the tokens from above
             Expression();
         }
         else{
+            // if not adding the string for the epsilon option
             output += emptySpacePrinter() + "__" + "\n";
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
-
+    // decreasing the space counter for alignment purposes
     public static void BeginExpression() {
+        // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<BeginExpression>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking if the current token contains a BEGIN token
         if (line.startsWith("BEGIN")) {
+            // adding the BEGIN lexeme with the correct alignment to the output string
             output += emptySpacePrinter() + "BEGIN (" + getActualLexeme() + ")\n";
             nextLine();
+            // calling the Statements method
             Statements();
         } else {
+            // if not, calling the printError function with the according parameter
             printError("BEGIN");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
-
+    // this method is used to apply the grammar of VarDefs
     public static void VarDefs() {
+        // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<VarDefs>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking if the current token contains a type of left parenthesis
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // storing the parenthesis type in a local string
             String bracketType = line.split(" ")[0];
             bracketType = bracketType.substring(4);
             nextLine();
+            // adding the correct parenthesis lexeme with the correct alignment to the output string
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            // checking if the current token contains a IDENTIFIER token
             if (line.startsWith("IDENTIFIER")) {
+                // if so adding the IDENTIFIER lexeme with the correct alignment
                 output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
                 nextLine();
+                // calling the Expressions method
                 Expression();
-
+                // checking if the parenthesis types match
                 if (line.contains(bracketType)) {
+                    // checking if it's right
                     if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
                         nextLine();
+                        // adding the correct parenthesis lexeme with the correct alignment
                         output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                         VarDef();
                     }
                     else {
+                        // calling the error method with the missing token
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
                 else {
+                    // calling the error method with the missing token
                     printError(getTheBracket(bracketType, "r"));
                 }
             }
             else {
+                // calling the error method with the missing token
                 printError("IDENTIFIER");
             }
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
-
+    // this method is used to apply the grammar of VarDef
     public static void VarDef() {
+        // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<VarDef>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking which method to call
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+            // calling VarDefs method if the current line contains parenthesis
             VarDefs();
         }
         else{
+            // if not adding the string for the epsilon option
             output += emptySpacePrinter() + "__" + "\n";
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
-
+    // this method is used to apply the grammar of ArgList
     public static void ArgList() {
+        // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<ArgList>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking which method to call
         if (line.startsWith("IDENTIFIER")) {
+            // adding the IDENTIFIER lexeme with the correct alignment
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
             nextLine();
+            // calling ArgList method
             ArgList();
         }
         else{
+            // if not adding the string for the epsilon option
             output += emptySpacePrinter() + "__" + "\n";
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
-
+    // this method is used to apply the grammar of EndExpression
     public static void Statements() {
+        // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<Statements>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increasing the space counter for alignment purposes
+        // checking if the current token contains a DEFINE token
         if (line.startsWith("DEFINE")) {
             nextLine();
+            // if so, adding the DEFINE lexeme with the correct alignment
             output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
+            // calling Definition method
             Definition();
+            // calling Statements method
             Statements();
         } else {
+            // if not, calling Expression method
             Expression();
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--;// decreasing the space counter for alignment purposes
     }
 }
 
