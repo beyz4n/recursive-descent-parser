@@ -189,7 +189,7 @@ public class SyntaxAnalyser {
             // when the calls are done check if we have the right and same type of parenthesis
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    // if we dont have right parenthesis print error
+                    // if we don't have right parenthesis print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
@@ -198,14 +198,14 @@ public class SyntaxAnalyser {
                     nextLine();
                 }
             }
-            // if we dont have correct bracket type print error
+            // if we don't have correct bracket type print error
             else {
                 printError(getTheBracket(bracketType, "r"));
             }
         }
-        // if we didnt have left parenthesis at beginning give error
+        // if we didn't have left parenthesis at beginning give error
         else {
-            printError("(");
+            printError("(/[/{");
         }
         // after function is done decrement the counter
         emptySpaceCounter--;
@@ -229,7 +229,7 @@ public class SyntaxAnalyser {
             // when the calls are done check if we have the right and same type of parenthesis
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    // if we dont have right parenthesis print error
+                    // if we don't have right parenthesis print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
@@ -239,7 +239,7 @@ public class SyntaxAnalyser {
                 }
             }
             else {
-                // if we dont have right bracket type print error
+                // if we don't have right bracket type print error
                 printError(getTheBracket(bracketType, "r"));
             }
         }
@@ -305,12 +305,12 @@ public class SyntaxAnalyser {
                         nextLine();
                         Statements();
                     }
-                    // if we dont have right parenthesis print error
+                    // if we don't have right parenthesis print error
                     else {
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
-                // if we dont have the right bracket type print error
+                // if we don't have the right bracket type print error
                 else {
                     printError(getTheBracket(bracketType, "r"));
                 }
@@ -322,7 +322,7 @@ public class SyntaxAnalyser {
         }
         // we expect left par or identifier print error
         else {
-            printError("(/IDENTIFIER");
+            printError("(/[/{/IDENTIFIER");
         }
         // end of function decrement the counter
         emptySpaceCounter--;
@@ -417,7 +417,7 @@ public class SyntaxAnalyser {
             // if we have right and correct brackets
             if (line.contains(bracketType)) {
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    // if we dont have print error
+                    // if we don't have print error
                     printError(getTheBracket(bracketType, "r"));
                 }
                 else{
@@ -426,14 +426,14 @@ public class SyntaxAnalyser {
                     nextLine();
                 }
             }
-            // if we dont have print error
+            // if we don't have print error
             else{
                 printError(getTheBracket(bracketType, "r"));
             }
         }
         // if none, then print error with expecting these
         else {
-            printError("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(");
+            printError("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/[/{");
         }
         // decrement the counter
         emptySpaceCounter--;
@@ -496,7 +496,7 @@ public class SyntaxAnalyser {
                 }
             }
             else {  // if we don't have left parenthesis, print error
-                printError("(");
+                printError("(/[/{");
             }
         } // if we have left parenthesis but not identifier
         else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
@@ -525,7 +525,7 @@ public class SyntaxAnalyser {
             }
         }
         else { // if we don't have identifier or left parenthesis, print error
-            printError("IDENTIFIER or (");
+            printError("IDENTIFIER/(/[/{");
         }
         emptySpaceCounter--; // decrement space counter
     }
@@ -583,7 +583,7 @@ public class SyntaxAnalyser {
             }
         } // if we don't have left parenthesis, print error
         else {
-            printError("(");
+            printError("(/[/{");
         }
         emptySpaceCounter--; // decrement space counter
     }
@@ -619,8 +619,8 @@ public class SyntaxAnalyser {
                 printError(getTheBracket(bracketType, "r"));
             }
         }
-        else{ // if we don't have left parenthesis, print error
-            // add it to output string with its space needed for alignment
+        else{ // if we don't have left parenthesis
+            // add ε to output string with its space needed for alignment
             output += emptySpacePrinter() + "__" + '\n';
         }
         emptySpaceCounter--; // decrement space counter
