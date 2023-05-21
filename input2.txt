@@ -4,4 +4,4 @@
             [i 0])
     (if (= i n)
         cur
-        (fib cur (+ prev cur) (+ i "hello")))))
+        (fib cur (+ prev cur) (+ i '\''))))

@@ -64,69 +64,93 @@ public class SyntaxAnalyser {
         return str;
     }
 
+    // The function to print error
     public static void printError(String error) {
-        output += "SYNTAX ERROR" + line.split(" ")[1] + "'" + error + "' is expected";
-        printWriter.print(output);
+        // Add error text to output string
+        output += "SYNTAX ERROR [" + line.split(" ")[1] + "]: '" + error + "' is expected";
+        printWriter.print(output); // Print output to output file
         printWriter.close();
-        System.out.println(output);
-        System.exit(1);
+        System.out.println(output); // Print output to console
+        System.exit(1); // Exit the program
     }
+
+    // The function to get lexemes from the input txt
     public static String getActualLexeme(){
         String str = "";
-        String type = line.split(" ")[0];
-        String point = line.split(" ")[1];
-        int row = Integer.parseInt(point.split(":")[0]);
-        int col = Integer.parseInt(point.split(":")[1]);
-        str = lexemes.get(row - 1);
+        String type = line.split(" ")[0]; // Take token type of the lexeme from the output file of the Lexical Analyser
+        String point = line.split(" ")[1]; // Take index of the lexeme from the output file of the Lexical Analyser
+        int row = Integer.parseInt(point.split(":")[0]); // row index of the lexeme
+        int col = Integer.parseInt(point.split(":")[1]); // column index of the lexeme
+        str = lexemes.get(row - 1); // get the line that contained desired lexeme
         str = str.substring(col - 1);
+
+        // if the token is not string and not character
         if(!type.startsWith("STRING") && !type.startsWith("CHAR")) {
-            String identifier = "";
+            String lexeme = "";
             int count = 0;
             while (count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' ||
                     str.charAt(count) == '[' || str.charAt(count) == ']' || str.charAt(count) == '{' || str.charAt(count) == '}' || str.charAt(count) == '~')) {
-                identifier += str.charAt(count);
+                lexeme += str.charAt(count); // take lexeme character by character
                 count++;
             }
-            return identifier;
+            return lexeme; // return the lexeme
         }
+        // else, if token is string
         else if(type.startsWith("STRING")){
-            String identifier = "" + str.charAt(0);
+            // Take first character of the lexeme which is (")
+            String lexeme = "" + str.charAt(0);
             int count = 1;
+
             while(count < str.length()){
-                identifier += str.charAt(count);
+                lexeme += str.charAt(count); // take lexeme character by character
+                // If character is " and previous one is not \, break since the string is completed.
                 if(str.charAt(count) == '"' && str.charAt(count-1) != '\\')
                     break;
                 count++;
             }
-            return identifier;
+
+            return lexeme; // return the lexeme
         }
+        // else, if token is character
         else {
-            String identifier = "" + str.charAt(0);
+            // Take first character of the lexeme which is (')
+            String lexeme = "" + str.charAt(0);
             int count = 1;
+
             while(count < str.length()){
-                identifier += str.charAt(count);
+                lexeme += str.charAt(count); // take lexeme character by character
+                // If character is ' and previous one is not \, break since the string is completed.
                 if(str.charAt(count) == '\'' && str.charAt(count-1) != '\\')
                     break;
                 count++;
             }
-            return identifier;
+
+            return lexeme; // return the lexeme
         }
     }
 
+    // Function to get bracket according to its type
     public static String getTheBracket(String bracketType, String pos){
+        // if type is PAR and position is right, return right parenthesis
         if(bracketType.equals("PAR") && pos.equals("r"))
             return ")";
+        // if type is PAR and position is left, return left parenthesis
         else if(bracketType.equals("PAR") && pos.equals("l"))
             return "(";
+        // if type is SQUAREB and position is right, return right square bracket
         else if(bracketType.equals("SQUAREB") && pos.equals("r"))
             return "]";
+        // if type is SQUARE and position is left, return left square bracket
         else if(bracketType.equals("SQUAREB") && pos.equals("l"))
             return "[";
+        // if type is CURLYB and position is right, return right curly bracket
         else if(bracketType.equals("CURLYB") && pos.equals("r"))
             return "}";
+        // if type is CURLYB and position is left, return left curly bracket
         else
             return "{";
     }
+
     // This method applies the grammar of Program
     public static void Program() {
         // adds the program to the output using the empty space counter
@@ -285,7 +309,7 @@ public class SyntaxAnalyser {
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
-                // if we dont have the right bracket type print error
+                // if we don't have the right bracket type print error
                 else {
                     printError(getTheBracket(bracketType, "r"));
                 }
@@ -414,157 +438,211 @@ public class SyntaxAnalyser {
         emptySpaceCounter--;
     }
 
+    // This function applies the grammar of LetExpression
     public static void LetExpression() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<LetExpression>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increment space counter
+        // if we have let
         if (line.startsWith("LET")) {
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "LET (" + getActualLexeme() + ")\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             LetExpr();
-        } else {
+        }
+        else { // if we don't have LET, print error
             printError("LET");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
+    // This function applies the grammar of LetExpr
     public static void LetExpr() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<LetExpr>" + "\n";
-        emptySpaceCounter++;
-        if (line.startsWith("IDENTIFIER")) {
-            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
-            nextLine();
+        emptySpaceCounter++;  // increment space counter
 
+        // if we have identifier
+        if (line.startsWith("IDENTIFIER")) {
+            // add it to output string with its space needed for alignment
+            output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
+            nextLine(); // take next line from the output pf the Lexical Analyser
+
+            // if we have left parenthesis
             if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
                 String bracketType = line.split(" ")[0];
-                bracketType = bracketType.substring(4);
+                bracketType = bracketType.substring(4); // Keep bracket type
+                // add it to output string with its space needed for alignment
                 output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
-                nextLine();
+                nextLine(); // take next line from the output pf the Lexical Analyser
                 VarDefs();
 
+                // if the bracket types match
                 if (line.contains(bracketType)) {
+                    // if we have right parenthesis
                     if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                        // add it to output string with its space needed for alignment
                         output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                        nextLine();
+                        nextLine(); // take next line from the output pf the Lexical Analyser
                         Statements();
                     }
-                    else {
+                    else { // if we don't have right parenthesis, print error
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
-                else {
+                else { // if parenthesis types does not match, print error
                     printError(getTheBracket(bracketType, "r"));
                 }
             }
-            else {
+            else {  // if we don't have left parenthesis, print error
                 printError("(");
             }
-        } else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+        } // if we have left parenthesis but not identifier
+        else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+            bracketType = bracketType.substring(4); // Keep bracket type
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             VarDefs();
 
+            // if the bracket types match
             if (line.contains(bracketType)) {
+                // if we have right parenthesis
                 if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                    // add it to output string with its space needed for alignment
                     output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                    nextLine();
+                    nextLine(); // take next line from the output pf the Lexical Analyser
                     Statements();
-                } else {
+                }
+                else { // if we don't have right parenthesis, print error
                     printError(getTheBracket(bracketType, "r"));
                 }
-            } else {
+            }
+            else { // if parenthesis types does not match, print error
                 printError(getTheBracket(bracketType, "r"));
             }
         }
-        else {
-            printError("LET or (");
+        else { // if we don't have identifier or left parenthesis, print error
+            printError("IDENTIFIER or (");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
+    // This function applies the grammar of CondExpression
     public static void CondExpression() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondExpression>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increment space counter
+
+        // if we have cond
         if (line.startsWith("COND")) {
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "COND (" + getActualLexeme() + ")\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             CondBranches();
         }
-        else {
+        else { // if we don't have cond, print error
             printError("COND");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
+    // This function applies the grammar of CondBranches
     public static void CondBranches() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondBranches>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increment space counter
+
+        // if we have left parenthesis
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+            bracketType = bracketType.substring(4); // Keep bracket type
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             Expression();
             Statements();
+
+            // if the bracket types match
             if (line.contains(bracketType)) {
+                // if we have right parenthesis
                 if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                    // add it to output string with its space needed for alignment
                     output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                    nextLine();
+                    nextLine(); // take next line from the output pf the Lexical Analyser
                     CondBranch();
-                } else {
+                }
+                else { // if we don't have right parenthesis, print error
                     printError(getTheBracket(bracketType, "r"));
                 }
-            } else {
+            }
+            else { // if parenthesis types does not match, print error
                 printError(getTheBracket(bracketType, "r"));
             }
-        } else {
+        } // if we don't have left parenthesis, print error
+        else {
             printError("(");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
+    // This function applies the grammar of CondBranch
     public static void CondBranch() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondBranch>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increment space counter
+
+        // if we have left parenthesis
         if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
             String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+            bracketType = bracketType.substring(4); // Keep bracket type
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             Expression();
             Statements();
+
+            // if the bracket types match
             if (line.contains(bracketType)) {
+                // if we don't have right parenthesis, print error
                 if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
                     printError(getTheBracket(bracketType, "r"));
                 }
-                else {
+                else { // if we have right parenthesis, print error
+                    // add it to output string with its space needed for alignment
                     output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
                 }
-            } else {
+            }
+            else { // if parenthesis types does not match, print error
                 printError(getTheBracket(bracketType, "r"));
             }
         }
-        else{
+        else{ // if we don't have left parenthesis, print error
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "__" + '\n';
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
-    public static void IfExpression() { // S
+    // This function applies the grammar of IfExpression
+    public static void IfExpression() {
+        // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
-        emptySpaceCounter++;
+        emptySpaceCounter++; // increment space counter
+        // if we have if
         if (line.startsWith("IF")) {
+            // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "IF (" + getActualLexeme() + ")\n";
-            nextLine();
+            nextLine(); // take next line from the output pf the Lexical Analyser
             Expression();
             Expression();
             EndExpression();
         }
-        else {
+        else { // if we don't have if, print error
             printError("IF");
         }
-        emptySpaceCounter--;
+        emptySpaceCounter--; // decrement space counter
     }
 
     public static void EndExpression() {
