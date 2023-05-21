@@ -42,8 +42,8 @@ public class SyntaxAnalyser {
         scanner1 = new Scanner(lex);
         nextLine();
         Program();
-        printWriter.print(output);
-        System.out.print(output);
+        printWriter.print(output.trim());
+        System.out.print(output.trim());
         printWriter.close();
     }
 
@@ -150,6 +150,7 @@ public class SyntaxAnalyser {
         else
             return "{";
     }
+
 
     // This method applies the grammar of Program
     public static void Program() {
@@ -309,7 +310,7 @@ public class SyntaxAnalyser {
                         printError(getTheBracket(bracketType, "r"));
                     }
                 }
-                // if we don't have the right bracket type print error
+                // if we dont have the right bracket type print error
                 else {
                     printError(getTheBracket(bracketType, "r"));
                 }
