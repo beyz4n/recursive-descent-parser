@@ -721,8 +721,8 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<ArgList>" + "\n";
         emptySpaceCounter++;
         if (line.startsWith("IDENTIFIER")) {
-            nextLine();
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
+            nextLine();
             ArgList();
         }
         else{
