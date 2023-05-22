@@ -148,8 +148,11 @@ public class SyntaxAnalyser {
             Program();
         }
         // if it is epsilon then add it to output
-        else {
+        else if(fileFinished){
             output +=  emptySpacePrinter() +  "__" + '\n';
+        }
+        else {
+            printError("(");
         }
         // when we are done with the function decrease the counter
         emptySpaceCounter--;
@@ -378,9 +381,6 @@ public class SyntaxAnalyser {
                     output +=  emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                     nextLine();
                 }
-
-            // if we don't have print error
-
         }
         // if none, then print error with expecting these
         else {
