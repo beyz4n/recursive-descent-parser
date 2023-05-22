@@ -48,26 +48,12 @@ public class LexicalAnalyser {
                 } else if (currentCh == ')') {
                     col++;
                     tokens += "RIGHTPAR " + row + ":" + col + "\n";
-                } else if (currentCh == '[') {
-                    col++;
-                    tokens += "LEFTSQUAREB " + row + ":" + col + "\n";
-                } else if (currentCh == ']') {
-                    col++;
-                    tokens += "RIGHTSQUAREB " + row + ":" + col + "\n";
-                } else if (currentCh == '{') {
-                    col++;
-                    tokens += "LEFTCURLYB " + row + ":" + col + "\n";
-                } else if (currentCh == '}') {
-                    col++;
-                    tokens += "RIGHTCURLYB " + row + ":" + col + "\n";
-
                 // Detect identifiers or numbers (starting with dot(.), plus(+) or minus(-))
                 } else if ((currentCh == '.' || currentCh == '+' || currentCh == '-')) {
                     String str = "" + currentCh;
                     int currentCol = col + 1;
                     // Take whole token until encounter a bracket or space
-                    while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' &&
-                            line.charAt(currentCol) != '[' && line.charAt(currentCol) != ']' && line.charAt(currentCol) != '{' && line.charAt(currentCol) != '}' && line.charAt(currentCol) != '~') {
+                    while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' && line.charAt(currentCol) != '~') {
                         str += line.charAt(currentCol);
                         currentCol++;
                     }
@@ -95,8 +81,7 @@ public class LexicalAnalyser {
                         String identifier = "" + line.charAt(col);
                         boolean isIdentifier = true;
                         int currentCol = col + 1;
-                        while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' &&
-                                line.charAt(currentCol) != '[' && line.charAt(currentCol) != ']' && line.charAt(currentCol) != '{' && line.charAt(currentCol) != '}' && line.charAt(currentCol) != '~') {
+                        while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' && line.charAt(currentCol) != '~') {
                             identifier += line.charAt(currentCol);
                             currentCol++;
                         }
@@ -265,7 +250,7 @@ public class LexicalAnalyser {
                 return true;
             // After the lexeme, if there is space or bracket or comment line
             } else if (line.charAt(col + keyword.length()) == ' ' || line.charAt(col + keyword.length()) == '~' || line.charAt(col + keyword.length()) == '(' || line.charAt(col + keyword.length()) == ')' ||
-                    line.charAt(col + keyword.length()) == '[' || line.charAt(col + keyword.length()) == ']' || line.charAt(col + keyword.length()) == '{' || line.charAt(col + keyword.length()) == '}' || col + keyword.length() == line.length() - 1) {
+                     col + keyword.length() == line.length() - 1) {
                 tokens += str.toUpperCase() + " " + row + ":" + (col + 1) + "\n";
                 col = col + keyword.length();
                 return true;
@@ -281,7 +266,7 @@ public class LexicalAnalyser {
         int currentcol = col + 1;
         // Take the lexeme character by character until encounter with the space or bracket or tilde
         while ((line.length() - 1) >= currentcol && (line.charAt(currentcol) != '~' && line.charAt(currentcol) != ' ' && line.charAt(currentcol) != '('
-                && line.charAt(currentcol) != ')' && line.charAt(currentcol) != '{' && line.charAt(currentcol) != '}' && line.charAt(col + 1) != '[' && line.charAt(col + 1) != ']')) {
+                && line.charAt(currentcol) != ')' )) {
             if ((line.length() - 1) >= currentcol) { // if it is not an end of the line go on
                 number += line.charAt(currentcol);
                 currentcol++;

@@ -95,8 +95,7 @@ public class SyntaxAnalyser {
         if(!type.startsWith("STRING") && !type.startsWith("CHAR")) {
             String lexeme = "";
             int count = 0;
-            while (count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' ||
-                    str.charAt(count) == '[' || str.charAt(count) == ']' || str.charAt(count) == '{' || str.charAt(count) == '}' || str.charAt(count) == '~')) {
+            while (count < str.length() && !(str.charAt(count) == ' ' || str.charAt(count) == '(' || str.charAt(count) == ')' || str.charAt(count) == '~')) {
                 lexeme += str.charAt(count); // take lexeme character by character
                 count++;
             }
@@ -136,29 +135,6 @@ public class SyntaxAnalyser {
         }
     }
 
-    // Function to get bracket according to its type
-    public static String getTheBracket(String bracketType, String pos){
-        // if type is PAR and position is right, return right parenthesis
-        if(bracketType.equals("PAR") && pos.equals("r"))
-            return ")";
-        // if type is PAR and position is left, return left parenthesis
-        else if(bracketType.equals("PAR") && pos.equals("l"))
-            return "(";
-        // if type is SQUAREB and position is right, return right square bracket
-        else if(bracketType.equals("SQUAREB") && pos.equals("r"))
-            return "]";
-        // if type is SQUARE and position is left, return left square bracket
-        else if(bracketType.equals("SQUAREB") && pos.equals("l"))
-            return "[";
-        // if type is CURLYB and position is right, return right curly bracket
-        else if(bracketType.equals("CURLYB") && pos.equals("r"))
-            return "}";
-        // if type is CURLYB and position is left, return left curly bracket
-        else
-            return "{";
-    }
-
-
     // This method applies the grammar of Program
     public static void Program() {
         // adds the program to the output using the empty space counter
@@ -166,7 +142,7 @@ public class SyntaxAnalyser {
         // increase the empty space counter since we entered a rule
         emptySpaceCounter++;
         // check if file is finished or we have a left parenthesis
-        if (!fileFinished && (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB"))) {
+        if (!fileFinished && (line.startsWith("LEFTPAR"))) {
             //call these functions according to the  grammar
             TopLevelForm();
             Program();
@@ -184,35 +160,27 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<TopLevelForm>" + "\n";
         emptySpaceCounter++;
         // check if we start with a left parenthesis
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            // keep the bracket type
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+        if (line.startsWith("LEFTPAR")) {
             // add the parenthesis to the output
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR " + "())" + "\n";
             // call the functions according to the grammar
             nextLine();
             SecondLevelForm();
             // when the calls are done check if we have the right and same type of parenthesis
-            if (line.contains(bracketType)) {
-                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    // if we don't have right parenthesis print error
-                    printError(getTheBracket(bracketType, "r"));
-                }
-                else{
-                    // if we have add to output
-                    output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                    nextLine();
-                }
+            if (!line.startsWith("RIGHTPAR")) {
+                // if we don't have right parenthesis print error
+                printError(")");
+            }
+            else{
+                // if we have, add to output
+                output +=  emptySpacePrinter() + "RIGHTPAR " + "())" + "\n";
+                nextLine();
             }
             // if we don't have correct bracket type print error
-            else {
-                printError(getTheBracket(bracketType, "r"));
-            }
         }
         // if we didn't have left parenthesis at beginning give error
         else {
-            printError("(/[/{");
+            printError("(");
         }
         // after function is done decrement the counter
         emptySpaceCounter--;
@@ -224,30 +192,21 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<SecondLevelForm>" + "\n";
         emptySpaceCounter++;
         // check if we start with a left parenthesis
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            // keep the bracket type
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+        if (line.startsWith("LEFTPAR")) {
             // add the parenthesis to the output
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             // call other functions according to the grammar
             nextLine();
             FunCall();
-            // when the calls are done check if we have the right and same type of parenthesis
-            if (line.contains(bracketType)) {
-                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    // if we don't have right parenthesis print error
-                    printError(getTheBracket(bracketType, "r"));
-                }
-                else{
-                    // if we have then add to output
-                    output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                    nextLine();
-                }
+            // when the calls are done check if we have the right parenthesis
+            if (!line.startsWith("RIGHTPAR")) {
+                // if we don't have right parenthesis print error
+                printError(")");
             }
-            else {
-                // if we don't have right bracket type print error
-                printError(getTheBracket(bracketType, "r"));
+            else{
+                // if we have then, add to output
+                output +=  emptySpacePrinter() + "RIGHTPAR " + "())" + "\n";
+                nextLine();
             }
         }
         // or call definition if there is no left parenthesis
@@ -263,7 +222,7 @@ public class SyntaxAnalyser {
         // puts the function to the output and increment the counter
         output += emptySpacePrinter() + "<Definition>" + "\n";
         emptySpaceCounter++;
-        // if we have define
+        // if we have "define"
         if (line.startsWith("DEFINE")) {
             // add it to the output
             output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
@@ -291,12 +250,9 @@ public class SyntaxAnalyser {
             Expression();
         }
         // if we have a left parenthesis
-        else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            // keep the bracket type
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+        else if (line.startsWith("LEFTPAR")) {
             // put left parenthesis to output
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             nextLine();
             // check if it is identifier
             if (line.startsWith("IDENTIFIER")) {
@@ -305,21 +261,15 @@ public class SyntaxAnalyser {
                 nextLine();
                 ArgList();
                 // if we have right and correct type of parenthesis
-                if (line.contains(bracketType)) {
-                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
-                        // put it to the output and call the new functions
-                        output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                        nextLine();
-                        Statements();
-                    }
-                    // if we don't have right parenthesis print error
-                    else {
-                        printError(getTheBracket(bracketType, "r"));
-                    }
+                if (line.startsWith("RIGHTPAR")  ) {
+                    // put it to the output and call the new functions
+                    output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                    nextLine();
+                    Statements();
                 }
-                // if we don't have the right bracket type print error
+                // if we don't have right parenthesis print error
                 else {
-                    printError(getTheBracket(bracketType, "r"));
+                    printError(")");
                 }
             }
             // we expect an identifier, print error
@@ -329,7 +279,7 @@ public class SyntaxAnalyser {
         }
         // we expect left par or identifier print error
         else {
-            printError("(/[/{/IDENTIFIER");
+            printError("(/IDENTIFIER");
         }
         // end of function decrement the counter
         emptySpaceCounter--;
@@ -360,7 +310,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<Expressions>" + "\n";
         emptySpaceCounter++;
         // if we have id, number, char, boolean or string call functions
-        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR")  ) {
             Expression();
             Expressions();
         }
@@ -413,34 +363,28 @@ public class SyntaxAnalyser {
             nextLine();
         }
         // if we have left parenthesis
-        else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            // keep the bracket type
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+        else if (line.startsWith("LEFTPAR")  ) {
             // put the left parenthesis to the output and call necessary rules
-            output += emptySpacePrinter() + "LEFT" + bracketType +"(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" +"(()" + "\n";
             nextLine();
             Expr();
             // if we have right and correct brackets
-            if (line.contains(bracketType)) {
-                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
+                if (!line.startsWith("RIGHTPAR")) {
                     // if we don't have print error
-                    printError(getTheBracket(bracketType, "r"));
+                    printError(")");
                 }
                 else{
                     // put it to output and call the next line
-                    output +=  emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
+                    output +=  emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                     nextLine();
                 }
-            }
+
             // if we don't have print error
-            else{
-                printError(getTheBracket(bracketType, "r"));
-            }
+
         }
         // if none, then print error with expecting these
         else {
-            printError("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/[/{");
+            printError("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(");
         }
         // decrement the counter
         emptySpaceCounter--;
@@ -477,62 +421,44 @@ public class SyntaxAnalyser {
             nextLine(); // take next line from the output pf the Lexical Analyser
 
             // if we have left parenthesis
-            if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-                String bracketType = line.split(" ")[0];
-                bracketType = bracketType.substring(4); // Keep bracket type
+            if (line.startsWith("LEFTPAR")  ) {
                 // add it to output string with its space needed for alignment
-                output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+                output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
                 nextLine(); // take next line from the output pf the Lexical Analyser
                 VarDefs();
-
-                // if the bracket types match
-                if (line.contains(bracketType)) {
-                    // if we have right parenthesis
-                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
-                        // add it to output string with its space needed for alignment
-                        output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                        nextLine(); // take next line from the output pf the Lexical Analyser
-                        Statements();
-                    }
-                    else { // if we don't have right parenthesis, print error
-                        printError(getTheBracket(bracketType, "r"));
-                    }
-                }
-                else { // if parenthesis types does not match, print error
-                    printError(getTheBracket(bracketType, "r"));
-                }
-            }
-            else {  // if we don't have left parenthesis, print error
-                printError("(/[/{");
-            }
-        } // if we have left parenthesis but not identifier
-        else if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4); // Keep bracket type
-            // add it to output string with its space needed for alignment
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
-            nextLine(); // take next line from the output pf the Lexical Analyser
-            VarDefs();
-
-            // if the bracket types match
-            if (line.contains(bracketType)) {
                 // if we have right parenthesis
-                if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                if (line.startsWith("RIGHTPAR")  ) {
                     // add it to output string with its space needed for alignment
-                    output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
+                    output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                     nextLine(); // take next line from the output pf the Lexical Analyser
                     Statements();
                 }
                 else { // if we don't have right parenthesis, print error
-                    printError(getTheBracket(bracketType, "r"));
+                    printError(")");
                 }
             }
-            else { // if parenthesis types does not match, print error
-                printError(getTheBracket(bracketType, "r"));
+            else {  // if we don't have left parenthesis, print error
+                printError("(");
+            }
+        } // if we have left parenthesis but not identifier
+        else if (line.startsWith("LEFTPAR")  ) {
+            // add it to output string with its space needed for alignment
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
+            nextLine(); // take next line from the output pf the Lexical Analyser
+            VarDefs();
+            // if we have right parenthesis
+            if (line.startsWith("RIGHTPAR")  ) {
+                // add it to output string with its space needed for alignment
+                output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                nextLine(); // take next line from the output pf the Lexical Analyser
+                Statements();
+            }
+            else { // if we don't have right parenthesis, print error
+                printError(")");
             }
         }
         else { // if we don't have identifier or left parenthesis, print error
-            printError("IDENTIFIER/(/[/{");
+            printError("IDENTIFIER/(");
         }
         emptySpaceCounter--; // decrement space counter
     }
@@ -563,34 +489,25 @@ public class SyntaxAnalyser {
         emptySpaceCounter++; // increment space counter
 
         // if we have left parenthesis
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4); // Keep bracket type
+        if (line.startsWith("LEFTPAR")  ) {
             // add it to output string with its space needed for alignment
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             nextLine(); // take next line from the output pf the Lexical Analyser
             Expression();
             Statements();
-
-            // if the bracket types match
-            if (line.contains(bracketType)) {
-                // if we have right parenthesis
-                if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
-                    // add it to output string with its space needed for alignment
-                    output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                    nextLine(); // take next line from the output pf the Lexical Analyser
-                    CondBranch();
-                }
-                else { // if we don't have right parenthesis, print error
-                    printError(getTheBracket(bracketType, "r"));
-                }
+            // if we have right parenthesis
+            if (line.startsWith("RIGHTPAR")  ) {
+                // add it to output string with its space needed for alignment
+                output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                nextLine(); // take next line from the output pf the Lexical Analyser
+                CondBranch();
             }
-            else { // if parenthesis types does not match, print error
-                printError(getTheBracket(bracketType, "r"));
+            else { // if we don't have right parenthesis, print error
+                printError(")");
             }
         } // if we don't have left parenthesis, print error
         else {
-            printError("(/[/{");
+            printError("(");
         }
         emptySpaceCounter--; // decrement space counter
     }
@@ -600,31 +517,23 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondBranch>" + "\n";
         emptySpaceCounter++; // increment space counter
-
         // if we have left parenthesis
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4); // Keep bracket type
+        if (line.startsWith("LEFTPAR")  ) {
             // add it to output string with its space needed for alignment
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             nextLine(); // take next line from the output pf the Lexical Analyser
             Expression();
             Statements();
 
-            // if the bracket types match
-            if (line.contains(bracketType)) {
-                // if we don't have right parenthesis, print error
-                if (!line.startsWith("RIGHTPAR") && !line.startsWith("RIGHTSQUAREB") && !line.startsWith("RIGHTCURLYB")) {
-                    printError(getTheBracket(bracketType, "r"));
-                }
-                else { // if we have right parenthesis, print error
-                    // add it to output string with its space needed for alignment
-                    output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
-                }
+            // if we don't have right parenthesis, print error
+            if (!line.startsWith("RIGHTPAR")) {
+                printError(")");
             }
-            else { // if parenthesis types does not match, print error
-                printError(getTheBracket(bracketType, "r"));
+            else { // if we have right parenthesis, print error
+                // add it to output string with its space needed for alignment
+                output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
             }
+
         }
         else{ // if we don't have left parenthesis
             // add ε to output string with its space needed for alignment
@@ -638,7 +547,7 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
         emptySpaceCounter++; // increment space counter
-        // if we have if
+        // if we have "if"
         if (line.startsWith("IF")) {
             // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "IF (" + getActualLexeme() + ")\n";
@@ -658,7 +567,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<EndExpression>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
         // checking which method to call
-        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+        if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR")  ) {
             // calling the Expression method if the next line contains one of the tokens from above
             Expression();
         }
@@ -692,13 +601,10 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<VarDefs>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
         // checking if the current token contains a type of left parenthesis
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
-            // storing the parenthesis type in a local string
-            String bracketType = line.split(" ")[0];
-            bracketType = bracketType.substring(4);
+        if (line.startsWith("LEFTPAR")) {
             nextLine();
             // adding the correct parenthesis lexeme with the correct alignment to the output string
-            output += emptySpacePrinter() + "LEFT" + bracketType + "(" + getTheBracket(bracketType, "l") + ")" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             // checking if the current token contains a IDENTIFIER token
             if (line.startsWith("IDENTIFIER")) {
                 // if so adding the IDENTIFIER lexeme with the correct alignment
@@ -707,23 +613,17 @@ public class SyntaxAnalyser {
                 // calling the Expressions method
                 Expression();
                 // checking if the parenthesis types match
-                if (line.contains(bracketType)) {
                     // checking if it's right
-                    if (line.startsWith("RIGHTPAR") || line.startsWith("RIGHTSQUAREB") || line.startsWith("RIGHTCURLYB")) {
+                    if (line.startsWith("RIGHTPAR")) {
                         nextLine();
                         // adding the correct parenthesis lexeme with the correct alignment
-                        output += emptySpacePrinter() + "RIGHT" + bracketType + "(" + getTheBracket(bracketType, "r") + ")" + "\n";
+                        output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                         VarDef();
                     }
                     else {
                         // calling the error method with the missing token
-                        printError(getTheBracket(bracketType, "r"));
+                        printError(")");
                     }
-                }
-                else {
-                    // calling the error method with the missing token
-                    printError(getTheBracket(bracketType, "r"));
-                }
             }
             else {
                 // calling the error method with the missing token
@@ -738,7 +638,7 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<VarDef>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
         // checking which method to call
-        if (line.startsWith("LEFTPAR") || line.startsWith("LEFTSQUAREB") || line.startsWith("LEFTCURLYB")) {
+        if (line.startsWith("LEFTPAR")  ) {
             // calling VarDefs method if the current line contains parenthesis
             VarDefs();
         }
