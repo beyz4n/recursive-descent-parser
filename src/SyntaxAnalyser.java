@@ -80,9 +80,27 @@ public class SyntaxAnalyser {
         System.out.println(output); // Print output to console
         System.exit(1); // Exit the program
     }
+ // TODO: rapora ekle
+    public static void printErrorDueToFileFinished(String error, int length) {
+        // Add error text to output string
+        if(fileFinished) {
+            String str = line.split(" ")[1];
+            int row = Integer.parseInt(str.split(":")[0]);
+            int col = Integer.parseInt(str.split(":")[1]);
+            col += length;
+            output += "SYNTAX ERROR [" + row + ":" + col + "]: '" + error + "' is expected";
+            printWriter.print(output); // Print output to output file
+            printWriter.close();
+            System.out.println(output); // Print output to console
+            System.exit(1); // Exit the program
+        }
+    }
 
     // The function to get lexemes from the input txt
     public static String getActualLexeme(){
+        if(line.startsWith("LEFTPAR"))
+            return "(";
+
         String str = "";
         String type = line.split(" ")[0]; // Take token type of the lexeme from the output file of the Lexical Analyser
         String point = line.split(" ")[1]; // Take index of the lexeme from the output file of the Lexical Analyser
@@ -165,7 +183,7 @@ public class SyntaxAnalyser {
         // check if we start with a left parenthesis
         if (line.startsWith("LEFTPAR")) {
             // add the parenthesis to the output
-            output += emptySpacePrinter() + "LEFTPAR " + "())" + "\n";
+            output += emptySpacePrinter() + "LEFTPAR " + "(()" + "\n";
             // call the functions according to the grammar
             nextLine();
             SecondLevelForm();
@@ -194,6 +212,7 @@ public class SyntaxAnalyser {
         // add it to the output and increment the counter
         output += emptySpacePrinter() + "<SecondLevelForm>" + "\n";
         emptySpaceCounter++;
+        printErrorDueToFileFinished("(/DEFINE", 2);
         // check if we start with a left parenthesis
         if (line.startsWith("LEFTPAR")) {
             // add the parenthesis to the output
@@ -225,6 +244,7 @@ public class SyntaxAnalyser {
         // puts the function to the output and increment the counter
         output += emptySpacePrinter() + "<Definition>" + "\n";
         emptySpaceCounter++;
+        printErrorDueToFileFinished("DEFINE", 2);
         // if we have "define"
         if (line.startsWith("DEFINE")) {
             // add it to the output
@@ -246,6 +266,7 @@ public class SyntaxAnalyser {
         // add the function to the output and increment the counter
         output += emptySpacePrinter() + "<DefinitionRight>" + "\n";
         emptySpaceCounter++;
+        printErrorDueToFileFinished("(/IDENTIFIER", 7);
         // if we have identifier then
         if (line.startsWith("IDENTIFIER")) {
             // put it to the output and call expression
@@ -293,6 +314,7 @@ public class SyntaxAnalyser {
         // put the function to the output, increment the counter
         output += emptySpacePrinter() + "<FunCall>" + "\n";
         emptySpaceCounter++;
+        printErrorDueToFileFinished("IDENTIFIER", 1);
         // if we have identifier put it to the output and call the functions
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
@@ -360,6 +382,7 @@ public class SyntaxAnalyser {
         // put it to the output and increment the counter
         output += emptySpacePrinter() + "<Expression>" + "\n";
         emptySpaceCounter++;
+        printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(", getActualLexeme().length() + 1);
         // check if we have one of these, if we have put it to the output and call the next line
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
             output += emptySpacePrinter() + line.split(" ")[0] + " (" + getActualLexeme() + ")\n";
