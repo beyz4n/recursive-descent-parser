@@ -199,7 +199,6 @@ public class SyntaxAnalyser {
                 // if we have, add to output
                 output +=  emptySpacePrinter() + "RIGHTPAR " + "())" + "\n";
                 nextLine();
-                printErrorDueToFileFinished("(/EPSILON");
             }
         }
         // if we didn't have left parenthesis at beginning give error
