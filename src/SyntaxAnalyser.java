@@ -418,6 +418,8 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<LetExpression>" + "\n";
         emptySpaceCounter++; // increment space counter
+        printErrorDueToFileFinished("LET", getActualLexeme().length() + 1);
+
         // if we have let
         if (line.startsWith("LET")) {
             // add it to output string with its space needed for alignment
@@ -436,6 +438,7 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<LetExpr>" + "\n";
         emptySpaceCounter++;  // increment space counter
+        printErrorDueToFileFinished("IDENTIFIER/(", getActualLexeme().length() + 1);
 
         // if we have identifier
         if (line.startsWith("IDENTIFIER")) {
@@ -491,6 +494,7 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondExpression>" + "\n";
         emptySpaceCounter++; // increment space counter
+        printErrorDueToFileFinished("COND", getActualLexeme().length() + 1);
 
         // if we have cond
         if (line.startsWith("COND")) {
@@ -510,6 +514,7 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondBranches>" + "\n";
         emptySpaceCounter++; // increment space counter
+        printErrorDueToFileFinished("(", getActualLexeme().length() + 1);
 
         // if we have left parenthesis
         if (line.startsWith("LEFTPAR")  ) {
@@ -540,6 +545,8 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<CondBranch>" + "\n";
         emptySpaceCounter++; // increment space counter
+        printErrorDueToFileFinished("(", getActualLexeme().length() + 1);
+
         // if we have left parenthesis
         if (line.startsWith("LEFTPAR")  ) {
             // add it to output string with its space needed for alignment
@@ -570,6 +577,8 @@ public class SyntaxAnalyser {
         // add it to output string with its space needed for alignment
         output += emptySpacePrinter() + "<IfExpression>" + "\n";
         emptySpaceCounter++; // increment space counter
+        printErrorDueToFileFinished("IF", getActualLexeme().length() + 1);
+
         // if we have "if"
         if (line.startsWith("IF")) {
             // add it to output string with its space needed for alignment
