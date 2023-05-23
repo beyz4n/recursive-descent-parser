@@ -81,12 +81,12 @@ public class SyntaxAnalyser {
         System.exit(1); // Exit the program
     }
     // this method is used to check if a file finished and prints an according error if it did
-    public static void printErrorDueToFileFinished(String error, int length) {
+    public static void printErrorDueToFileFinished(String error) {
         if(fileFinished) {
             String str = line.split(" ")[1];
             int row = Integer.parseInt(str.split(":")[0]); // find row index
             int col = Integer.parseInt(str.split(":")[1]); // find column index
-            col += length; // add the length to the column index
+            col += getActualLexeme().length()+1; // add the length to the column index
             // Add error text to output string
             output += "SYNTAX ERROR [" + row + ":" + col + "]: '" + error + "' is expected";
             printWriter.print(output); // Print output to output file
@@ -564,6 +564,7 @@ public class SyntaxAnalyser {
             else { // if we have right parenthesis, print error
                 // add it to output string with its space needed for alignment
                 output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                nextLine();
             }
 
         }
@@ -600,7 +601,6 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<EndExpression>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("LET/COND/IF/BEGIN/IDENTIFIER/(", getActualLexeme().length()+1);
         // checking which method to call
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING") || line.startsWith("LEFTPAR")  ) {
             // calling the Expression method if the next line contains one of the tokens from above
@@ -617,12 +617,12 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<BeginExpression>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("BEGIN", 2);
         // checking if the current token contains a BEGIN token
         if (line.startsWith("BEGIN")) {
             // adding the BEGIN lexeme with the correct alignment to the output string
             output += emptySpacePrinter() + "BEGIN (" + getActualLexeme() + ")\n";
             nextLine();
+            printErrorDueToFileFinished("LET/COND/IF/BEGIN/IDENTIFIER/(/DEFINE");
             // calling the Statements method
             Statements();
         }
@@ -637,10 +637,10 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<VarDefs>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("(/)", 2);
         // checking if the current token contains a type of left parenthesis
         if (line.startsWith("LEFTPAR")) {
             nextLine();
+            printErrorDueToFileFinished("IDENTIFIER");
             // adding the correct parenthesis lexeme with the correct alignment to the output string
             output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             // checking if the current token contains a IDENTIFIER token
@@ -648,14 +648,16 @@ public class SyntaxAnalyser {
                 // if so adding the IDENTIFIER lexeme with the correct alignment
                 output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
                 nextLine();
+                printErrorDueToFileFinished("LET/COND/IF/BEGIN/IDENTIFIER/(");
                 // calling the Expressions method
                 Expression();
                 // checking if the parenthesis types match
                     // checking if it's right
                     if (line.startsWith("RIGHTPAR")) {
-                        nextLine();
                         // adding the correct parenthesis lexeme with the correct alignment
                         output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                        nextLine();
+                        printErrorDueToFileFinished("(/)");
                         VarDef();
                     }
                     else {
@@ -678,7 +680,6 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<VarDef>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("(/)", 2);
         // checking which method to call
         if (line.startsWith("LEFTPAR")  ) {
             // calling VarDefs method if the current line contains parenthesis
@@ -695,12 +696,12 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<ArgList>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("IDENTIFIER/)", getActualLexeme().length() + 1);
         // checking which method to call
         if (line.startsWith("IDENTIFIER")) {
             // adding the IDENTIFIER lexeme with the correct alignment
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() + ")\n";
             nextLine();
+            printErrorDueToFileFinished("IDENTIFIER/)");
             // calling ArgList method
             ArgList();
         }
@@ -715,13 +716,12 @@ public class SyntaxAnalyser {
         // adding the method name with the correct alignment
         output += emptySpacePrinter() + "<Statements>" + "\n";
         emptySpaceCounter++; // increasing the space counter for alignment purposes
-        printErrorDueToFileFinished("LET/COND/IF/BEGIN/IDENTIFIER/(/DEFINE", 2);
-
         // checking if the current token contains a DEFINE token
         if (line.startsWith("DEFINE")) {
-            nextLine();
             // if so, adding the DEFINE lexeme with the correct alignment
             output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
+            nextLine();
+            printErrorDueToFileFinished("IDENTIFIER/("); // checking if file ended
             // calling Definition method
             Definition();
             // calling Statements method
