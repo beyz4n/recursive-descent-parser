@@ -286,7 +286,7 @@ public class SyntaxAnalyser {
                 // put it to the output call new functions
                 output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
                 nextLine();
-                printErrorDueToFileFinished("IDENTIFIER/EPSILON");
+                printErrorDueToFileFinished("IDENTIFIER/)");
                 ArgList();
                 // if we have right and correct type of parenthesis
                 if (line.startsWith("RIGHTPAR")  ) {
@@ -323,7 +323,7 @@ public class SyntaxAnalyser {
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
             nextLine();
-            printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/EPSILON");
+            printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
             Expressions();
         }
         // we expect an identifier, print error
@@ -391,7 +391,7 @@ public class SyntaxAnalyser {
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
             output += emptySpacePrinter() + line.split(" ")[0] + " (" + getActualLexeme() + ")\n";
             nextLine();
-            printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/EPSILON");
+            printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
         }
         // if we have left parenthesis
         else if (line.startsWith("LEFTPAR")  ) {
@@ -409,7 +409,7 @@ public class SyntaxAnalyser {
                     // put it to output and call the next line
                     output +=  emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                     nextLine();
-                    printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/EPSILON/)");
+                    printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
                 }
         }
         // if none, then print error with expecting these
@@ -458,7 +458,7 @@ public class SyntaxAnalyser {
                 // add it to output string with its space needed for alignment
                 output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
                 nextLine(); // take next line from the output pf the Lexical Analyser
-                printErrorDueToFileFinished("EPSILON/(");
+                printErrorDueToFileFinished("(");
                 VarDefs();
                 // if we have right parenthesis
                 if (line.startsWith("RIGHTPAR")  ) {
@@ -480,7 +480,7 @@ public class SyntaxAnalyser {
             // add it to output string with its space needed for alignment
             output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             nextLine(); // take next line from the output pf the Lexical Analyser
-            printErrorDueToFileFinished("(/EPSILON");
+            printErrorDueToFileFinished("(");
             VarDefs();
             // if we have right parenthesis
             if (line.startsWith("RIGHTPAR")  ) {
@@ -539,7 +539,7 @@ public class SyntaxAnalyser {
                 // add it to output string with its space needed for alignment
                 output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
                 nextLine(); // take next line from the output pf the Lexical Analyser
-                printErrorDueToFileFinished("EPSILON/(");
+                printErrorDueToFileFinished("(/)");
                 CondBranch();
             }
             else { // if we don't have right parenthesis, print error
