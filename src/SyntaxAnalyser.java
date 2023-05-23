@@ -653,6 +653,9 @@ public class SyntaxAnalyser {
                 printError("IDENTIFIER");
             }
         }
+        else{
+            printError("(");
+        }
         emptySpaceCounter--; // decreasing the space counter for alignment purposes
     }
     // this method is used to apply the grammar of VarDef

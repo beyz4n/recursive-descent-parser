@@ -41,19 +41,33 @@ public class LexicalAnalyser {
                     col = 0;
                     break;
 
-                // Detect brackets
+                    // Detect brackets
                 } else if (currentCh == '(') {
                     col++;
                     tokens += "LEFTPAR " + row + ":" + col + "\n";
                 } else if (currentCh == ')') {
                     col++;
                     tokens += "RIGHTPAR " + row + ":" + col + "\n";
-                // Detect identifiers or numbers (starting with dot(.), plus(+) or minus(-))
+                } else if (currentCh == '[') {
+                    col++;
+                    tokens += "LEFTSQUAREB " + row + ":" + col + "\n";
+                } else if (currentCh == ']') {
+                    col++;
+                    tokens += "RIGHTSQUAREB " + row + ":" + col + "\n";
+                } else if (currentCh == '{') {
+                    col++;
+                    tokens += "LEFTCURLYB " + row + ":" + col + "\n";
+                } else if (currentCh == '}') {
+                    col++;
+                    tokens += "RIGHTCURLYB " + row + ":" + col + "\n";
+
+                    // Detect identifiers or numbers (starting with dot(.), plus(+) or minus(-))
                 } else if ((currentCh == '.' || currentCh == '+' || currentCh == '-')) {
                     String str = "" + currentCh;
                     int currentCol = col + 1;
                     // Take whole token until encounter a bracket or space
-                    while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' && line.charAt(currentCol) != '~') {
+                    while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' &&
+                            line.charAt(currentCol) != '[' && line.charAt(currentCol) != ']' && line.charAt(currentCol) != '{' && line.charAt(currentCol) != '}' && line.charAt(currentCol) != '~') {
                         str += line.charAt(currentCol);
                         currentCol++;
                     }
@@ -61,7 +75,7 @@ public class LexicalAnalyser {
                     if (str.length() == 1) {
                         tokens += "IDENTIFIER " + row + ":" + (col + 1) + "\n";
                         col++;
-                    // Else it can be a number starting with dot(.), plus(+) or minus(-)
+                        // Else it can be a number starting with dot(.), plus(+) or minus(-)
                     } else if ((currentCh == '+' || currentCh == '-') && (line.charAt(col + 1) == '.' || (line.charAt(col + 1) >= '0' && line.charAt(col + 1) <= '9'))) {
                         isNumber(line, currentCh);
                     } else if (currentCh == '.' && (line.charAt(col + 1) >= '0' && line.charAt(col + 1) <= '9')) {
@@ -72,7 +86,7 @@ public class LexicalAnalyser {
                         printErrorMessages(str);
                     }
 
-                // Detect identifier & keyword & boolean
+                    // Detect identifier & keyword & boolean
                 } else if ((currentCh >= 'a' && currentCh <= 'z') || currentCh == '!' || currentCh == '*' || currentCh == '/' || currentCh == ':' || currentCh == '<' || currentCh == '>' || currentCh == '=' || currentCh == '?') {
                     // Check the lexeme is a keyword or not
                     if (!(isAKeyword(line, "true") || isAKeyword(line, "false") || isAKeyword(line, "define") || isAKeyword(line, "let") || isAKeyword(line, "cond") ||
@@ -81,7 +95,8 @@ public class LexicalAnalyser {
                         String identifier = "" + line.charAt(col);
                         boolean isIdentifier = true;
                         int currentCol = col + 1;
-                        while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' && line.charAt(currentCol) != '~') {
+                        while (currentCol != line.length() && line.charAt(currentCol) != ' ' && line.charAt(currentCol) != '(' && line.charAt(currentCol) != ')' &&
+                                line.charAt(currentCol) != '[' && line.charAt(currentCol) != ']' && line.charAt(currentCol) != '{' && line.charAt(currentCol) != '}' && line.charAt(currentCol) != '~') {
                             identifier += line.charAt(currentCol);
                             currentCol++;
                         }
@@ -104,7 +119,7 @@ public class LexicalAnalyser {
                             col += identifier.length();
                         }
                     }
-                // Detect characters
+                    // Detect characters
                 } else if (currentCh == '\'') {
                     String chars; // Variable to keep char
                     int currentcol = col + 1;
@@ -136,16 +151,16 @@ public class LexicalAnalyser {
                     if (chars.length() == 3 && chars.charAt(1) != '\\' && chars.charAt(1) != '\'' && chars.charAt(2) == '\'') {
                         tokens += "CHAR " + row + ":" + (col + 1) + "\n";
                         col += 3;
-                    // If character is '\\' or '\''
+                        // If character is '\\' or '\''
                     } else if (chars.length() == 4 && chars.charAt(3) == '\'' && chars.charAt(1) == '\\' && (chars.charAt(2) == '\\' || chars.charAt(2) == '\'')) {
                         tokens += "CHAR " + row + ":" + (col + 1) + "\n";
                         col += 4;
-                    // Else it is an invalid token, print error message and exit the system
+                        // Else it is an invalid token, print error message and exit the system
                     } else {
                         printErrorMessages(chars);
                     }
 
-                // Detect strings
+                    // Detect strings
                 } else if (currentCh == '"') {
                     String str; // variable to keep string
                     int currentcol = col + 1;
@@ -205,7 +220,7 @@ public class LexicalAnalyser {
                         printErrorMessages(str);
                     }
 
-                // Detect numbers
+                    // Detect numbers
                 } else if ((currentCh <= '9' && currentCh >= '0') || currentCh == '+' || currentCh == '-' || currentCh == '.') {
                     isNumber(line, currentCh);
                 } else {
@@ -215,8 +230,8 @@ public class LexicalAnalyser {
             row++; // Increment row at the end of each line
         }
         // If there is no invalid token, print all of them
-    //    tokens = tokens.trim();
-    //    System.out.println(tokens);
+        //    tokens = tokens.trim();
+        //    System.out.println(tokens);
         printer.print(tokens);
         printer.close();
     }
@@ -248,9 +263,9 @@ public class LexicalAnalyser {
                 tokens += str.toUpperCase() + " " + row + ":" + (col + 1) + "\n";
                 col = col + keyword.length();
                 return true;
-            // After the lexeme, if there is space or bracket or comment line
+                // After the lexeme, if there is space or bracket or comment line
             } else if (line.charAt(col + keyword.length()) == ' ' || line.charAt(col + keyword.length()) == '~' || line.charAt(col + keyword.length()) == '(' || line.charAt(col + keyword.length()) == ')' ||
-                     col + keyword.length() == line.length() - 1) {
+                    line.charAt(col + keyword.length()) == '[' || line.charAt(col + keyword.length()) == ']' || line.charAt(col + keyword.length()) == '{' || line.charAt(col + keyword.length()) == '}' || col + keyword.length() == line.length() - 1) {
                 tokens += str.toUpperCase() + " " + row + ":" + (col + 1) + "\n";
                 col = col + keyword.length();
                 return true;
@@ -266,7 +281,7 @@ public class LexicalAnalyser {
         int currentcol = col + 1;
         // Take the lexeme character by character until encounter with the space or bracket or tilde
         while ((line.length() - 1) >= currentcol && (line.charAt(currentcol) != '~' && line.charAt(currentcol) != ' ' && line.charAt(currentcol) != '('
-                && line.charAt(currentcol) != ')' )) {
+                && line.charAt(currentcol) != ')' && line.charAt(currentcol) != '{' && line.charAt(currentcol) != '}' && line.charAt(col + 1) != '[' && line.charAt(col + 1) != ']')) {
             if ((line.length() - 1) >= currentcol) { // if it is not an end of the line go on
                 number += line.charAt(currentcol);
                 currentcol++;
@@ -298,7 +313,7 @@ public class LexicalAnalyser {
                 tokens += "NUMBER " + row + ":" + (col + 1) + "\n";
                 col += number.length();
             }
-        // If lexeme begins with 0x, it can be a hexadecimal number
+            // If lexeme begins with 0x, it can be a hexadecimal number
         } else if (number.length() >= 3 && currentCh == '0' && line.charAt(col + 1) == 'x') {
             boolean isHex = true;
             int counterCol = col + 2;
@@ -348,7 +363,7 @@ public class LexicalAnalyser {
                                 break;
                             }
                         }
-                    // If after the point there is no decimal digit, print an error message and exit the system
+                        // If after the point there is no decimal digit, print an error message and exit the system
                     } else {
                         printErrorMessages(number);
                     }
@@ -369,7 +384,7 @@ public class LexicalAnalyser {
                             tokens += "NUMBER " + row + ":" + (col + 1) + "\n";
                             col += number.length();
                         }
-                    // If it does not have 'E' or 'e', it is still a number
+                        // If it does not have 'E' or 'e', it is still a number
                     } else if (number.length() == currentIndex) {
                         tokens += "NUMBER " + row + ":" + (col + 1) + "\n";
                         col += number.length();
@@ -413,7 +428,7 @@ public class LexicalAnalyser {
                             tokens += "NUMBER " + row + ":" + (col + 1) + "\n";
                             col += number.length();
                         }
-                    // If it does not have 'E' or 'e', it is still a number
+                        // If it does not have 'E' or 'e', it is still a number
                     } else if (number.length() == currentIndex) {
                         tokens += "NUMBER " + row + ":" + (col + 1) + "\n";
                         col += number.length();
