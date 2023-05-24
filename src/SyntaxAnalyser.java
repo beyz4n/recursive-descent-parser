@@ -6,11 +6,11 @@ import java.util.Scanner;
 public class SyntaxAnalyser {
     static String line; // this is the string where we store the current line of the input file
     static String output = ""; // this is the string where we store the output of the lexical analyser
-    static Scanner scanner1;
-    static PrintWriter printWriter;
+    static Scanner scanner1; // scanner for reading file
+    static PrintWriter printWriter; // printer for creating output
     static boolean fileFinished = false; // boolean variable to mark the end of a file
     static long emptySpaceCounter = 0; // used to count the number of space chars needed
-    static File file;
+    static File file; // input file
     static ArrayList<String> lexemes; // list containing all the lexemes
 
     // this is our main method where we integrate everything
@@ -82,6 +82,7 @@ public class SyntaxAnalyser {
     }
     // this method is used to check if a file finished and prints an according error if it did
     public static void printErrorDueToFileFinished(String error) {
+        // if file is finished then print the expected options
         if(fileFinished) {
             String str = line.split(" ")[1];
             int row = Integer.parseInt(str.split(":")[0]); // find row index
@@ -98,6 +99,7 @@ public class SyntaxAnalyser {
 
     // The function to get lexemes from the input txt
     public static String getActualLexeme(){
+        // if left or right par then return them
         if(line.startsWith("LEFTPAR"))
             return "(";
         if(line.startsWith("RIGHTPAR"))
@@ -161,16 +163,17 @@ public class SyntaxAnalyser {
         output += emptySpacePrinter() + "<Program>" + "\n";
         // increase the empty space counter since we entered a rule
         emptySpaceCounter++;
-        // check if file is finished or we have a left parenthesis
+        // check if file is finished, or we have a left parenthesis
         if (!fileFinished && (line.startsWith("LEFTPAR"))) {
             //call these functions according to the  grammar
             TopLevelForm();
             Program();
         }
-        // if it is epsilon then add it to output
+        // if it is epsilon then add it to output (file finished)
         else if(fileFinished){
             output +=  emptySpacePrinter() +  "__" + '\n';
         }
+        // if file is not finished and we don't have left par, then give error
         else {
             printError("(");
         }
@@ -188,6 +191,7 @@ public class SyntaxAnalyser {
             output += emptySpacePrinter() + "LEFTPAR " + "(()" + "\n";
             // call the functions according to the grammar
             nextLine();
+            // if after taking next line the file finishes, then print error with given expected tokens
             printErrorDueToFileFinished("(/DEFINE");
             SecondLevelForm();
             // when the calls are done check if we have the right and same type of parenthesis
@@ -219,6 +223,7 @@ public class SyntaxAnalyser {
             // add the parenthesis to the output
             output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
             // call other functions according to the grammar
+            // if after taking next line the file finishes, then print error with given expected tokens
             nextLine();
             printErrorDueToFileFinished("IDENTIFIER");
             FunCall();
@@ -230,6 +235,7 @@ public class SyntaxAnalyser {
             else{
                 // if we have then, add to output
                 output +=  emptySpacePrinter() + "RIGHTPAR " + "())" + "\n";
+                // if after taking next line the file finishes, then print error with given expected tokens
                 nextLine();
                 printErrorDueToFileFinished(")");
             }
@@ -252,6 +258,7 @@ public class SyntaxAnalyser {
             // add it to the output
             output += emptySpacePrinter() + "DEFINE (" + getActualLexeme() + ")\n";
             // call necessary functions
+            // if after taking next line the file finishes, then print error with given expected tokens
             nextLine();
             printErrorDueToFileFinished("(/IDENTIFIER");
             DefinitionRight();
@@ -279,19 +286,22 @@ public class SyntaxAnalyser {
         else if (line.startsWith("LEFTPAR")) {
             // put left parenthesis to output
             output += emptySpacePrinter() + "LEFTPAR" + "(()" + "\n";
+            // if after taking next line the file finishes, then print error with given expected tokens
             nextLine();
             printErrorDueToFileFinished("IDENTIFIER");
             // check if it is identifier
             if (line.startsWith("IDENTIFIER")) {
                 // put it to the output call new functions
                 output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
+                // if after taking next line the file finishes, then print error with given expected tokens
                 nextLine();
                 printErrorDueToFileFinished("IDENTIFIER/)");
                 ArgList();
-                // if we have right and correct type of parenthesis
+                // if we have right parenthesis
                 if (line.startsWith("RIGHTPAR")  ) {
                     // put it to the output and call the new functions
                     output += emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                    // if after taking next line the file finishes, then print error with given expected tokens
                     nextLine();
                     printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/DEFINE");
                     Statements();
@@ -322,6 +332,7 @@ public class SyntaxAnalyser {
         // if we have identifier put it to the output and call the functions
         if (line.startsWith("IDENTIFIER")) {
             output += emptySpacePrinter() + "IDENTIFIER (" + getActualLexeme() +  ")\n";
+            // if after taking next line the file finishes, then print error with given expected tokens
             nextLine();
             printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
             Expressions();
@@ -390,6 +401,7 @@ public class SyntaxAnalyser {
         // check if we have one of these, if we have put it to the output and call the next line
         if (line.startsWith("IDENTIFIER") || line.startsWith("NUMBER") || line.startsWith("CHAR") || line.startsWith("BOOLEAN") || line.startsWith("STRING")) {
             output += emptySpacePrinter() + line.split(" ")[0] + " (" + getActualLexeme() + ")\n";
+            // if after taking next line the file finishes, then print error with given expected tokens
             nextLine();
             printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
         }
@@ -400,7 +412,7 @@ public class SyntaxAnalyser {
             nextLine();
             printErrorDueToFileFinished("LET/COND/IF/BEGIN/IDENTIFIER");
             Expr();
-            // if we have right and correct brackets
+            // if we have right parenthesis
                 if (!line.startsWith("RIGHTPAR")) {
                     // if we don't have print error
                     printError(")");
@@ -408,6 +420,7 @@ public class SyntaxAnalyser {
                 else{
                     // put it to output and call the next line
                     output +=  emptySpacePrinter() + "RIGHTPAR" + "())" + "\n";
+                    // if after taking next line the file finishes, then print error with given expected tokens
                     nextLine();
                     printErrorDueToFileFinished("IDENTIFIER/NUMBER/CHAR/BOOLEAN/STRING/(/)");
                 }
