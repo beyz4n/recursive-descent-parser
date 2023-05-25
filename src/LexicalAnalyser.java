@@ -230,7 +230,7 @@ public class LexicalAnalyser {
             row++; // Increment row at the end of each line
         }
         // If there is no invalid token, print all of them
-        //    tokens = tokens.trim();
+            tokens = tokens.trim();
         //    System.out.println(tokens);
         printer.print(tokens);
         printer.close();
