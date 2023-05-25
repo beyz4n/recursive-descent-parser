@@ -1,2 +1,0 @@
-(define (fibonacci n)
-  ( begin (fib 15) ) )

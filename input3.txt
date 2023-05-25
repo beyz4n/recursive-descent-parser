@@ -1,3 +1,2 @@
 (define (fibonacci n)
-  ( cond (fib 15)
-            (prev '0') ) )
+  ( begin (fib 15) ) )
